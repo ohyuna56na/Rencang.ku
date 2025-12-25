@@ -4,12 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.data.CulinaryPlace
+import com.oyn.rencangku.data.User
+import com.oyn.rencangku.network.ApiService
 import com.oyn.rencangku.weather.ApiConfig
 import com.oyn.rencangku.weather.WeatherResponse
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val apiService: ApiService,
+    private val sessionManager: SessionManager
+) : ViewModel() {
 
     private val _weatherData = MutableLiveData<WeatherResponse?>()
     val weatherData: LiveData<WeatherResponse?> = _weatherData
@@ -18,22 +24,43 @@ class HomeViewModel : ViewModel() {
     val locationName: LiveData<String> = _locationName
 
     private val repository = HomeRepository()
-    private val _culinaryPlaces =
-        MutableLiveData<List<CulinaryPlace>>()
-    val culinaryPlaces: LiveData<List<CulinaryPlace>> =
-        _culinaryPlaces
+
+    private val _culinaryPlaces = MutableLiveData<List<CulinaryPlace>>()
+    val culinaryPlaces: LiveData<List<CulinaryPlace>> = _culinaryPlaces
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _user = MutableLiveData<User>()
+    val user: LiveData<User> = _user
+
+    private val _error = MutableLiveData<String>()
+    val error: LiveData<String> = _error
+
+    fun getUsername() {
+        viewModelScope.launch {
+            try {
+                val token = sessionManager.getToken()
+                if (token.isNullOrEmpty()) {
+                    _error.value = "Session habis"
+                    return@launch
+                }
+
+                val user = apiService.getProfile("Bearer $token")
+                _user.value = user
+
+            } catch (e: Exception) {
+                _error.value = e.message ?: "Gagal mengambil data user"
+            }
+        }
+    }
 
     fun loadCulinaryPlaces() {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val data = repository.getCulinaryPlaces()
-                _culinaryPlaces.value = data
+                _culinaryPlaces.value = repository.getCulinaryPlaces()
             } catch (e: Exception) {
-                e.printStackTrace()
                 _culinaryPlaces.value = emptyList()
             } finally {
                 _isLoading.value = false
@@ -48,12 +75,9 @@ class HomeViewModel : ViewModel() {
     fun fetchWeather(lat: Double, lon: Double) {
         viewModelScope.launch {
             try {
-                val response = ApiConfig.weatherService.getWeatherByCoord(lat, lon)
-                _weatherData.value = response
-            } catch (e: Exception) {
-                e.printStackTrace()
-                _culinaryPlaces.value = emptyList()
-            }
+                _weatherData.value =
+                    ApiConfig.weatherService.getWeatherByCoord(lat, lon)
+            } catch (_: Exception) {}
         }
     }
 }

@@ -1,37 +1,70 @@
 package com.oyn.rencangku.ui.profile
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.core.content.ContextCompat
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.oyn.rencangku.R
+import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.databinding.FragmentProfileBinding
+import com.oyn.rencangku.network.ApiClient
+import com.oyn.rencangku.ui.onboarding.ActivityOnboardingLast
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
+    private lateinit var viewModel: ProfileViewModel
+    private lateinit var sessionManager: SessionManager
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val profileViewModel =
-            ViewModelProvider(this).get(ProfileViewModel::class.java)
 
         _binding = FragmentProfileBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        val textView: TextView = binding.textProfile
-        profileViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+        sessionManager = SessionManager(requireContext())
+
+        val factory = ProfileViewModelFactory(
+            ApiClient.RestaurantApi,
+            sessionManager
+        )
+
+        viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class.java]
+
+        observeData()
+        setupLogout()
+
+        viewModel.loadProfile()
+
+        return binding.root
+    }
+
+    private fun observeData() {
+        viewModel.user.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                binding.tvUserName.text = user.name
+                binding.tvUserEmail.text = user.email
+            }
         }
-        return root
+
+        viewModel.error.observe(viewLifecycleOwner) { message ->
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupLogout() {
+        binding.btnLogout.setOnClickListener {
+            sessionManager.clearSession()
+            startActivity(Intent(requireContext(), ActivityOnboardingLast::class.java))
+            requireActivity().finish()
+        }
     }
 
     override fun onDestroyView() {

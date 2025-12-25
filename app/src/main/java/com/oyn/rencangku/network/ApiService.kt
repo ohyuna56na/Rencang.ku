@@ -140,4 +140,8 @@ interface ApiService {
         @Body request: SignupRequest
     ): AuthResponse
 
+    @GET("auth/me")
+    suspend fun getProfile(
+        @Header("Authorization") token: String
+    ): User
 }

@@ -93,11 +93,12 @@ data class UserPreferenceRequest(
 
 data class User(
     val id: Int,
-    val created_at: String,
     val name: String,
     val email: String,
-    val avatar: String?
+    val created_at: String? = null,
+    val avatar: String? = null
 )
+
 
 enum class VisitWeather {
     PANAS,

@@ -4,19 +4,17 @@
     <string name="title_favorite">Favorite</string>
     <string name="title_profile">Profile</string>
 
-    <string name="splash">JelajahPanganan</string>
-    <string name="welcome">Selamat datang di JelajahPanganan!</string>
+    <string name="welcome">Selamat Datang di Aplikasi Rencang.ku</string>
     <string name="onboarding_screens">Onboarding screens</string>
     <string name="next">Selanjutnya</string>
     <string name="skip">Lewati</string>
-    <string name="desc_ob_1">Temukan petualangan kuliner autentik dan ramah lingkungan di setiap sudut kota.</string>
-    <string name="tittle_ob2">Rekomendasi Khusus untuk Anda</string>
-    <string name="desc_ob2">Jelajahi pilihan kuliner yang sesuai dengan preferensi dan lokasi Anda saat ini.</string>
-    <string name="tittle_ob3">Mendukung Ekonomi Lokal dan Ramah Lingkungan</string>
-    <string name="desc_ob3">Dengan JelajahPanganan, setiap kunjungan berarti dukungan untuk UMKM dan komunitas lokal.</string>
-    <string name="tittle_ob4">Praktik Makanan Tanpa Limbah</string>
-    <string name="desc_ob4"> Carilah tempat makan yang mendukung keberlanjutan dengan penggunaan plastik.</string>
-    <string name="desc_ob5">Temukan petualangan kuliner autentik dan ramah lingkungan di setiap sudut kota.</string>
+    <string name="tittle_ob1">RÉNCANG.KU – Teman Kuliner Pintar</string>
+    <string name="desc_ob_1">Rekomendasi tempat kuliner terbaik di Kota Sukabumi, disesuaikan dengan selera dan kebutuhanmu.</string>
+    <string name="tittle_ob2">Rekomendasi yang Mengerti Kamu</string>
+    <string name="desc_ob2">RÉNCANG.KU menganalisis preferensi, rating, ulasan, dan jarak untuk memberikan rekomendasi yang paling relevan.</string>
+    <string name="tittle_ob3">Jelajah Kuliner Tanpa Bingung</string>
+    <string name="desc_ob3">Temukan tempat makan sesuai lokasi, waktu, dan kondisi — cocok untuk warga lokal maupun wisatawan.</string>
+    <string name="desc_ob5">Temukan petualangan kuliner autentik di setiap sudut kota.</string>
 
     <string name="create_your_account">Buat Akun Anda</string>
     <string name="already_have_an_account">Sudah memiliki akun?</string>

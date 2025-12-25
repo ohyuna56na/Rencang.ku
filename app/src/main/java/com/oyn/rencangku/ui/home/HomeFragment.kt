@@ -7,16 +7,20 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.oyn.rencangku.R
+import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.databinding.FragmentHomeBinding
+import com.oyn.rencangku.network.ApiClient
+import java.util.Calendar
 import java.util.Locale
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
@@ -24,7 +28,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: HomeViewModel by viewModels()
+    private lateinit var viewModel: HomeViewModel
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var adapter: CulinaryAdapter
@@ -38,6 +42,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentHomeBinding.bind(view)
+
+        val sessionManager = SessionManager(requireContext())
+        val factory = HomeViewModelFactory(
+            ApiClient.RestaurantApi,
+            sessionManager
+        )
+
+        viewModel = ViewModelProvider(this, factory)
+            .get(HomeViewModel::class.java)
 
         Log.d(TAG, "onViewCreated")
 
@@ -99,17 +112,39 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             binding.progressBar.visibility =
                 if (isLoading) View.VISIBLE else View.GONE
 
-            // Saat loading → tvNoResults HARUS disembunyikan
             if (isLoading) {
                 binding.tvNoResults.visibility = View.GONE
             }
         }
+        viewModel.getUsername()
     }
 
     private fun loadData() {
         Log.d(TAG, "loadData() called")
+        observeData()
         requestLocationPermission()
         viewModel.loadCulinaryPlaces()
+    }
+
+
+    private fun observeData() {
+        viewModel.user.observe(viewLifecycleOwner) { user ->
+            if (user != null) {
+                val greeting = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+                    in 5..10 -> "Selamat Pagi"
+                    in 11..14 -> "Selamat Siang"
+                    in 15..18 -> "Selamat Sore"
+                    else -> "Selamat Malam"
+                }
+                binding.TvNameUsers.text = "$greeting,\n${user.name}!"
+            } else {
+                binding.TvNameUsers.text = "Hello, Guest!"
+            }
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { message ->
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun requestLocationPermission() {

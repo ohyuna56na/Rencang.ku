@@ -28,6 +28,7 @@ class SignInViewModel(
                 )
                 _loginResult.value = response
             } catch (e: Exception) {
+                e.printStackTrace()
                 _loginResult.value = null
             } finally {
                 _isLoading.value = false

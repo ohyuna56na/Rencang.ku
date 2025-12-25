@@ -7,8 +7,8 @@
     android:background="@android:color/white">
 
     <ImageView
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_width="match_parent"
+        android:layout_height="379dp"
         android:src="@drawable/gambar_onboarding1"
         android:layout_gravity="center_horizontal"/>
 
@@ -17,16 +17,16 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_semi_bold"
         android:text="@string/welcome"
+        android:gravity="center"
         android:textColor="@color/primary"
         android:textSize="22sp" />
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="137dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="50dp"
         android:fontFamily="@font/poppins_medium"
         android:gravity="center"
-        android:padding="30dp"
         android:text="@string/desc_ob_1"
         android:textColor="@color/secondary"
         android:textSize="16sp" />

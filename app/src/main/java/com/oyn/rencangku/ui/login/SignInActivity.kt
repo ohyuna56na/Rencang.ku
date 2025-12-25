@@ -3,12 +3,14 @@ package com.oyn.rencangku.ui.login
 import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.oyn.rencangku.MainActivity
 import com.oyn.rencangku.R
+import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.databinding.ActivitySignInBinding
 import com.oyn.rencangku.network.ApiClient
 import com.oyn.rencangku.ui.register.CreateAccountActivity
@@ -16,6 +18,7 @@ import com.oyn.rencangku.ui.register.CreateAccountActivity
 class SignInActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySignInBinding
+    private lateinit var sessionManager: SessionManager
 
     private val viewModel: SignInViewModel by viewModels {
         SignInViewModelFactory(ApiClient.RestaurantApi)
@@ -23,6 +26,13 @@ class SignInActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sessionManager = SessionManager(this)
+        if (sessionManager.isLogin()) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
+
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -85,6 +95,9 @@ class SignInActivity : AppCompatActivity() {
 
         viewModel.loginResult.observe(this) { result ->
             if (result != null) {
+
+                sessionManager.saveLogin(result.authToken)
+                Log.d("SESSION", "Token: ${sessionManager.getToken()}")
                 Toast.makeText(this, "Login berhasil", Toast.LENGTH_SHORT).show()
 
                 startActivity(
