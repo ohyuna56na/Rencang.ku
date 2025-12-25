@@ -1,0 +1,13 @@
+<resources>
+
+        <style name="Theme.Rencangku"
+            parent="Theme.Material3.DayNight.NoActionBar">
+
+                <item name="android:windowSplashScreenAnimatedIcon">@drawable/logo_splash</item>
+                <item name="android:windowSplashScreenAnimationDuration">800</item>
+
+                <!-- setelah splash -->
+                <item name="postSplashScreenTheme">@style/Theme.Rencangku.Main</item>
+        </style>
+
+</resources>

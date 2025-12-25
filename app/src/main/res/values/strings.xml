@@ -1,0 +1,107 @@
+<resources>
+    <string name="app_name">RÉNCANG.KU</string>
+    <string name="title_home">Home</string>
+    <string name="title_favorite">Favorite</string>
+    <string name="title_profile">Profile</string>
+
+    <string name="splash">JelajahPanganan</string>
+    <string name="welcome">Selamat datang di JelajahPanganan!</string>
+    <string name="onboarding_screens">Onboarding screens</string>
+    <string name="next">Selanjutnya</string>
+    <string name="skip">Lewati</string>
+    <string name="desc_ob_1">Temukan petualangan kuliner autentik dan ramah lingkungan di setiap sudut kota.</string>
+    <string name="tittle_ob2">Rekomendasi Khusus untuk Anda</string>
+    <string name="desc_ob2">Jelajahi pilihan kuliner yang sesuai dengan preferensi dan lokasi Anda saat ini.</string>
+    <string name="tittle_ob3">Mendukung Ekonomi Lokal dan Ramah Lingkungan</string>
+    <string name="desc_ob3">Dengan JelajahPanganan, setiap kunjungan berarti dukungan untuk UMKM dan komunitas lokal.</string>
+    <string name="tittle_ob4">Praktik Makanan Tanpa Limbah</string>
+    <string name="desc_ob4"> Carilah tempat makan yang mendukung keberlanjutan dengan penggunaan plastik.</string>
+    <string name="desc_ob5">Temukan petualangan kuliner autentik dan ramah lingkungan di setiap sudut kota.</string>
+
+    <string name="create_your_account">Buat Akun Anda</string>
+    <string name="already_have_an_account">Sudah memiliki akun?</string>
+    <string name="sign_in">Masuk</string>
+    <string name="sign_in_with_google">Masuk dengan Google</string>
+    <string name="google_icon">google icon</string>
+    <string name="facebook_icon">facebook icon</string>
+    <string name="agree_with_terms_conditions">Setuju dengan</string>
+    <string name="terms_conditions">Terms &amp; Conditions</string>
+    <string name="fill_your_information_below">Isi informasi Anda di bawah ini</string>
+    <string name="name">Username</string>
+    <string name="name_hint">Masukkan Username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="sign_up">Daftar</string>
+    <string name="welcome_back_message">Hai! Selamat datang kembali, kau dirindukan</string>
+    <string name="email_hint">Masukkan Email Anda</string>
+    <string name="password_hint">Masukkan Kata Sandi</string>
+    <string name="forgot_password">Lupa Kata Sandi?</string>
+    <string name="no_account_message">Tidak memiliki akun?</string>
+    <string name="forgot_password_clicked">Lupa Kata Sandi Diklik</string>
+
+
+    <!-- Beranda strings -->
+    <string name="name_hai">Hai,</string>
+    <string name="name_users_bold">John Doe</string>
+    <string name="culiner_kategori">Kategori Kuliner</string>
+    <string name="notification_icon">Notification icon</string>
+    <string name="search_icon">Search icon</string>
+    <string name="name_weather">Cuaca Tidak Tersedia</string>
+    <string name="name_location">Lokasi Tidak Tersedia</string>
+    <string name="text_food">Makanan</string>
+    <string name="text_drink">Minuman</string>
+    <string name="text_recomendation">Rekomendasi</string>
+    <string name="arrow_left">Back to</string>
+    <string name="title_notifications">Notifikasi</string>
+    <string name="nama_restoran">Warteg Gang Mangga</string>
+    <string name="alamat_restoran">Jl. Letjen Suprapto No. 123, Solo</string>
+    <string name="categori_suhu">Dingin</string>
+    <string name="categori_eco_friendly">Eco-friendly</string>
+    <string name="rating">4.5</string>
+
+    <!-- Profile strings -->
+    <string name="profile">Profil</string>
+    <string name="back">Back</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="settings">Pengaturan</string>
+    <string name="help">Bantuan</string>
+    <string name="logout">Keluar</string>
+    <string name="visits">Visits</string>
+    <string name="membership">Membership</string>
+    <string name="user_name_default">Jhon Doe</string>
+    <string name="user_email_default">example@gmail.com</string>
+    <string name="visits_count">10 Kunjungan</string>
+    <string name="membership_count">5 Kunjungan</string>
+    <string name="jhon_doe">Jhon Doe</string>
+    <string name="example_email">example@gmail.com</string>
+    <string name="kunjungan">5 Kunjungan</string>
+    <string name="news_judul">Indonesia menjadi negara yang akan mengadakan event mengenai pengurangan limbah plastik</string>
+
+    <!-- Detail strings -->
+    <string name="name_detail">Detail</string>
+    <string name="title_kulian">Kuliner</string>">
+    <string name="name_kuliner">Bakso Malang</string>
+    <string name="name_user">Jhon Doe</string>
+    <string name="days_ago_feedback">1 hari yang lalu</string>
+    <string name="desc_feedback">Lorem ipsum dolor sit amet, consectetur adipisicing elit,sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="OperationalHours">Jam Operasional</string>
+    <string name="google_maps_key">AIzaSyC5z7pB1rtnC_cgB0ErIbi8pwk0y2b9zbY</string>
+
+
+    <!-- Login With Google -->
+    <string name="default_web_client_id">1058367483881-80dnftuiu0o0kdrororl57d0tkdv5co4.apps.googleusercontent.com</string>
+
+    <!-- Search String -->
+    <string name="search_hint">Cari restoran...</string>
+    <string name="search_icon_desc">Search icon</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="cek_lokasi">Cek Lokasi</string>
+    <string name="name_notif">Notifikasi</string>
+    <string name="name_kategori">Kategori</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="tambah_lokasi">Tambah Lokasi</string>
+    <string name="title_activity_maps_navigation">MapsNavigationActivity</string>
+    <string name="koneksi_internet">Tidak Ada Koneksi Internet</string>
+    <string name="mulai_lokasi">Mulai Perjalanan</string>
+
+</resources>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="yellow">#FFEB3B</color>
+
+    <!-- Primary -->
+    <color name="primary">#9CAB84</color>
+    <color name="onPrimary">#FFFFFF</color>
+
+    <!-- Secondary -->
+    <color name="secondary">#C5D89D</color>
+    <color name="onSecondary">#2E2E2E</color>
+
+    <!-- Tertiary -->
+    <color name="tertiary">#89986D</color>
+    <color name="onTertiary">#FFFFFF</color>
+
+    <!-- Background -->
+    <color name="background">#F6F0D7</color>
+    <color name="onBackground">#2E2E2E</color>
+
+    <!-- Surface -->
+    <color name="surface">#FFFFFF</color>
+    <color name="onSurface">#2E2E2E</color>
+
+    <!-- Dark Primary -->
+    <color name="dark_primary">#8BAE66</color>
+    <color name="dark_on_primary">#1B211A</color>
+
+    <!-- Dark Secondary -->
+    <color name="dark_secondary">#628141</color>
+    <color name="dark_on_secondary">#EBD5AB</color>
+
+    <!-- Dark Tertiary -->
+    <color name="dark_tertiary">#EBD5AB</color>
+    <color name="dark_on_tertiary">#1B211A</color>
+
+    <!-- Dark Background -->
+    <color name="dark_background">#1B211A</color>
+    <color name="dark_on_background">#EBD5AB</color>
+
+    <!-- Dark Surface -->
+    <color name="dark_surface">#242B22</color>
+    <color name="dark_on_surface">#EBD5AB</color>
+</resources>

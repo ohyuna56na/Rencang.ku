@@ -1,0 +1,30 @@
+<resources>
+
+    <style name="Theme.Rencangku" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Theme utama -->
+    </style>
+
+    <style name="Theme.Rencangku.Main"
+        parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
+        <!-- EDGE TO EDGE -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <!-- Primary -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/onPrimary</item>
+        <!-- Secondary -->
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/onSecondary</item>
+        <!-- Tertiary -->
+        <item name="colorTertiary">@color/tertiary</item>
+        <item name="colorOnTertiary">@color/onTertiary</item>
+        <!-- Background -->
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/onBackground</item>
+        <!-- Surface -->
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/onSurface</item>
+    </style>
+
+</resources>
