@@ -11,8 +11,16 @@ class SessionManager(context: Context) {
         const val TOKEN = "TOKEN"
         const val IS_LOGIN = "IS_LOGIN"
         const val ONBOARDING_SHOWN = "ONBOARDING_SHOWN"
+        const val USER_ID = "USER_ID"
     }
 
+    fun saveUserId(userId: Int) {
+        prefs.edit().putInt(USER_ID, userId).apply()
+    }
+
+    fun getUserId(): Int {
+        return prefs.getInt(USER_ID, -1)
+    }
     fun saveLogin(token: String) {
         prefs.edit()
             .putString(TOKEN, token)

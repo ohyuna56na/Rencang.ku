@@ -8,12 +8,14 @@ import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.oyn.rencangku.MainActivity
 import com.oyn.rencangku.R
 import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.databinding.ActivitySignInBinding
 import com.oyn.rencangku.network.ApiClient
 import com.oyn.rencangku.ui.register.CreateAccountActivity
+import kotlinx.coroutines.launch
 
 class SignInActivity : AppCompatActivity() {
 
@@ -89,6 +91,7 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
+
         viewModel.isLoading.observe(this) {
             binding.LoginButton.isEnabled = !it
         }
@@ -96,14 +99,40 @@ class SignInActivity : AppCompatActivity() {
         viewModel.loginResult.observe(this) { result ->
             if (result != null) {
 
-                sessionManager.saveLogin(result.authToken)
-                Log.d("SESSION", "Token: ${sessionManager.getToken()}")
-                Toast.makeText(this, "Login berhasil", Toast.LENGTH_SHORT).show()
+                lifecycleScope.launch {
 
-                startActivity(
-                    Intent(this, MainActivity::class.java)
-                )
-                finish()
+                    try {
+                        // 1️⃣ Simpan token
+                        sessionManager.saveLogin(result.authToken)
+
+                        // 2️⃣ Ambil profile pakai coroutine
+                        val token = "Bearer ${sessionManager.getToken()}"
+                        val user = ApiClient.RestaurantApi.getProfile(token)
+
+                        // 3️⃣ Simpan user ID
+                        sessionManager.saveUserId(user.id)
+
+                        Log.d("SESSION", "Token: ${sessionManager.getToken()}")
+                        Log.d("SESSION", "UserID: ${sessionManager.getUserId()}")
+
+                        Toast.makeText(
+                            this@SignInActivity,
+                            "Login berhasil",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        startActivity(Intent(this@SignInActivity, MainActivity::class.java))
+                        finish()
+
+                    } catch (e: Exception) {
+                        Toast.makeText(
+                            this@SignInActivity,
+                            "Gagal ambil profile",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
             } else {
                 Toast.makeText(this, "Email atau password salah", Toast.LENGTH_SHORT).show()
             }

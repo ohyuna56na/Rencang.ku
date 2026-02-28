@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
+import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.databinding.FragmentFavoriteBinding
 import com.oyn.rencangku.network.ApiClient
 
@@ -29,7 +30,8 @@ class FavoriteFragment : Fragment() {
         _binding = FragmentFavoriteBinding.inflate(inflater, container, false)
 
         val apiService = ApiClient.RestaurantApi
-        val repository = FavoriteRepository(apiService)
+        val sessionManager = SessionManager(requireContext())
+        val repository = FavoriteRepository(apiService, sessionManager)
         val factory = FavoriteViewModelFactory(repository)
 
         viewModel = ViewModelProvider(this, factory)[FavoriteViewModel::class.java]

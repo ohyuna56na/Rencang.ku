@@ -36,7 +36,9 @@ interface ApiService {
        FAVORITES
        ========================= */
     @GET("favorites")
-    suspend fun getFavorites(): List<Favorite>
+    suspend fun getFavorites(
+        @Header("Authorization") token: String
+    ): List<Favorite>
 
     @GET("favorites/{id}")
     suspend fun getFavoriteDetail(
@@ -45,17 +47,20 @@ interface ApiService {
 
     @POST("favorites")
     suspend fun addFavorite(
+        @Header("Authorization") token: String,
         @Body request: FavoriteRequest
     ): Favorite
 
     @PATCH("favorites/{id}")
     suspend fun updateFavorite(
+        @Header("Authorization") token: String,
         @Path("id") id: Int,
         @Body request: FavoriteRequest
     ): Favorite
 
     @DELETE("favorites/{id}")
     suspend fun deleteFavorite(
+        @Header("Authorization") token: String,
         @Path("id") id: Int
     )
 

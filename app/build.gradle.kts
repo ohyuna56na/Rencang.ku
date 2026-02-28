@@ -1,13 +1,14 @@
 plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.jetbrains.kotlin.android)
-    id("com.google.devtools.ksp") version "2.0.21-1.0.25"
-    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-parcelize")
+    id("com.google.devtools.ksp")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
     namespace = "com.oyn.rencangku"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.oyn.rencangku"
@@ -21,7 +22,7 @@ android {
         buildConfigField(
             "String",
             "WEATHER_API_KEY",
-            "\"${project.findProperty("WEATHER_API_KEY")}\""
+            "\"${project.findProperty("WEATHER_API_KEY")?.toString() ?: "MISSING_KEY"}\""
         )
     }
 
@@ -34,17 +35,20 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
+
     buildFeatures {
         viewBinding = true
         buildConfig = true
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
@@ -57,32 +61,34 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
-    implementation (libs.jetbrains.kotlinx.coroutines.android)
+    implementation(libs.jetbrains.kotlinx.coroutines.android)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation (libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    // Google
     implementation(libs.play.services.maps)
     implementation(libs.play.services.places)
     implementation(libs.places)
     implementation(libs.play.services.fitness)
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.tasks)
+    implementation(libs.android.maps.utils)
+
+    // UI
+    implementation(libs.androidx.cardview)
+    implementation(libs.material.v1100)
+    implementation(libs.github.glide)
+    annotationProcessor(libs.compiler)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit2.converter.gson)
+
+    // Splash
+    implementation(libs.androidx.core.splashscreen)
+
+    // Test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    implementation (libs.androidx.cardview)
-    implementation (libs.material.v1100)
-    implementation (libs.github.glide)
-
-    //Reforfit
-    implementation (libs.retrofit)
-    implementation (libs.retrofit2.converter.gson)
-
-    //Maps
-    implementation (libs.play.services.maps)
-    implementation(libs.play.services.location)
-    implementation (libs.android.maps.utils)
-    implementation (libs.play.services.tasks)
-
-    //Animasi dan splasscreen
-    implementation (libs.androidx.core.splashscreen)
-    implementation (libs.github.glide)
-    annotationProcessor (libs.compiler)
 }

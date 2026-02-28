@@ -4,6 +4,8 @@
     <string name="title_favorite">Favorite</string>
     <string name="title_profile">Profile</string>
 
+    <string name="splash">Rencang.Ku</string>
+
     <string name="welcome">Selamat Datang di Aplikasi Rencang.ku</string>
     <string name="onboarding_screens">Onboarding screens</string>
     <string name="next">Selanjutnya</string>
@@ -102,4 +104,6 @@
     <string name="koneksi_internet">Tidak Ada Koneksi Internet</string>
     <string name="mulai_lokasi">Mulai Perjalanan</string>
 
+    <!-- Broadcast String -->
+    <string name="loading_navigation">Temukan rasa terbaik Sukabumi bersama RencangKu.</string>
 </resources>

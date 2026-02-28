@@ -1,0 +1,65 @@
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="180dp"
+    android:layout_height="218dp"
+    android:layout_marginBottom="25dp"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="3dp"
+    app:cardBackgroundColor="@color/white"
+    tools:ignore="TextSizeCheck">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/imgKuliner"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/rounded_image"
+            android:clipToOutline="true"
+            android:contentDescription="@string/name_kuliner"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img"
+            tools:ignore="UnusedAttribute" />
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="120dp"
+        tools:ignore="RedundantNamespace">
+
+        <!-- Nama Restoran -->
+        <TextView
+            android:id="@+id/tvKulinerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="15dp"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:text="@string/name_kuliner"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
+        <!-- Kategori Suhu -->
+        <TextView
+            android:id="@+id/tvCategori"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:text="@string/categori_suhu"
+            android:textColor="@color/primary"
+            android:textSize="10sp"
+            tools:ignore="SmallSp,TextContrastCheck" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

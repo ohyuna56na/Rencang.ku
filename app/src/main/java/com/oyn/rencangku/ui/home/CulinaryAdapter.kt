@@ -6,8 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.oyn.rencangku.data.CulinaryPlace
 import com.oyn.rencangku.databinding.ItemRestoranBinding
 
-class CulinaryAdapter :
-    RecyclerView.Adapter<CulinaryViewHolder>() {
+class CulinaryAdapter(
+    private val onClick: (CulinaryPlace) -> Unit
+) : RecyclerView.Adapter<CulinaryViewHolder>() {
 
     private val items = mutableListOf<CulinaryPlace>()
 
@@ -33,7 +34,11 @@ class CulinaryAdapter :
         holder: CulinaryViewHolder,
         position: Int
     ) {
-        holder.bind(items[position])
+        val item = items[position]
+        holder.bind(item)
+        holder.itemView.setOnClickListener {
+            onClick(item)
+        }
     }
 
     override fun getItemCount() = items.size

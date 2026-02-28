@@ -2,6 +2,7 @@ package com.oyn.rencangku.ui.home
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.os.Bundle
@@ -20,6 +21,7 @@ import com.oyn.rencangku.R
 import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.databinding.FragmentHomeBinding
 import com.oyn.rencangku.network.ApiClient
+import com.oyn.rencangku.ui.detailResto.DetailRestoActivity
 import java.util.Calendar
 import java.util.Locale
 
@@ -70,7 +72,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setupRecyclerView() {
-        adapter = CulinaryAdapter()
+        adapter = CulinaryAdapter { culinaryPlace ->
+
+            Toast.makeText(
+                requireContext(),
+                culinaryPlace.title,
+                Toast.LENGTH_SHORT
+            ).show()
+            val intent = Intent(requireContext(), DetailRestoActivity::class.java)
+            intent.putExtra("SELECTED_RESTAURANT", culinaryPlace)
+            startActivity(intent)
+        }
         binding.itemRestoran.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = this@HomeFragment.adapter

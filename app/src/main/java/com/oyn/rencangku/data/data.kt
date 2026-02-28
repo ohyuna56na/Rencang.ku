@@ -1,5 +1,9 @@
 package com.oyn.rencangku.data
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class CulinaryPlace(
     val id: Int,
     val page_url: String?,
@@ -15,17 +19,7 @@ data class CulinaryPlace(
     val phone: String?,
     val open_hours: String?,
     val categorize_weather: String?
-)
-
-data class OpenHours(
-    val monday: String?,
-    val tuesday: String?,
-    val wednesday: String?,
-    val thursday: String?,
-    val friday: String?,
-    val saturday: String?,
-    val sunday: String?
-)
+): Parcelable
 
 data class Favorite(
     val id: Int,
@@ -98,7 +92,6 @@ data class User(
     val created_at: String? = null,
     val avatar: String? = null
 )
-
 
 enum class VisitWeather {
     PANAS,

@@ -23,19 +23,28 @@
             android:value="AIzaSyC5z7pB1rtnC_cgB0ErIbi8pwk0y2b9zbY" />
         <activity
             android:name=".ui.onboarding.OnboardingActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Rencangku">
-
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="false" />
         <activity android:name=".ui.onboarding.ActivityOnboardingLast" />
         <activity android:name=".ui.register.CreateAccountActivity" />
         <activity android:name=".ui.login.SignInActivity" />
+        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".ui.maps.MapsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_maps" />
+        <activity
+            android:name=".ui.detailResto.DetailRestoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.maps.MapsNavigationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_maps_navigation" />
+
     </application>
 </manifest>
