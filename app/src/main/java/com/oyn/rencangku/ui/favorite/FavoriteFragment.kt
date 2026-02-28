@@ -1,5 +1,6 @@
 package com.oyn.rencangku.ui.favorite
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.databinding.FragmentFavoriteBinding
 import com.oyn.rencangku.network.ApiClient
+import com.oyn.rencangku.ui.detailResto.DetailRestoActivity
 
 class FavoriteFragment : Fragment() {
 
@@ -55,17 +57,26 @@ class FavoriteFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = FavoriteAdapter { favorite ->
-            viewModel.deleteFavorite(favorite.id)
-        }
+
+        adapter = FavoriteAdapter(
+
+            onItemClick = { place ->
+
+                val intent = Intent(requireContext(), DetailRestoActivity::class.java)
+                intent.putExtra("SELECTED_RESTAURANT", place)
+                startActivity(intent)
+            },
+
+            onDeleteClick = { place ->
+                viewModel.deleteFavorite(place.id)
+            }
+        )
 
         binding.recyclerViewFavorite.layoutManager =
             GridLayoutManager(requireContext(), 2)
 
         binding.recyclerViewFavorite.adapter = adapter
     }
-
-
     private fun observeViewModel() {
         viewModel.favorites.observe(viewLifecycleOwner) { list ->
             if (list.isEmpty()) {

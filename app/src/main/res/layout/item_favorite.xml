@@ -1,13 +1,14 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="15dp"
+    android:layout_marginBottom="25dp"
     android:layout_margin="8dp"
     app:cardCornerRadius="15dp"
     app:cardElevation="3dp"
-    app:cardBackgroundColor="@color/white">
+    app:cardBackgroundColor="@color/white"
+    tools:ignore="TextSizeCheck">
 
     <!-- Gambar Profil -->
     <RelativeLayout
@@ -88,6 +89,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
             android:fontFamily="@font/poppins_semi_bold"
             android:text="@string/nama_restoran"
@@ -100,6 +102,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
             android:orientation="horizontal"
             tools:ignore="UseCompoundDrawables">

@@ -3,10 +3,12 @@ package com.oyn.rencangku.ui.favorite
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.oyn.rencangku.data.CulinaryPlace
 import com.oyn.rencangku.data.Favorite
 import com.oyn.rencangku.databinding.ItemFavoriteBinding
 
 class FavoriteAdapter(
+    private val onItemClick: (CulinaryPlace) -> Unit,
     private val onDeleteClick: (Favorite) -> Unit
 ) : RecyclerView.Adapter<FavoriteAdapter.ViewHolder>() {
 
@@ -23,9 +25,17 @@ class FavoriteAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Favorite) {
-            binding.TvRatings.text = "4.5" // sementara
-            binding.tvRestaurantName.text = "Restoran Favorit"
-            binding.tvRestaurantAddress.text = "Alamat restoran"
+
+            val place = item._culinary_places ?: return
+
+            binding.tvRestaurantName.text = place.title
+            binding.tvRestaurantAddress.text = place.address
+            binding.TvRatings.text = place.rating ?: "0.0"
+            binding.tvCategoriSuhu.text = place.categorize_weather
+
+            binding.root.setOnClickListener {
+                onItemClick(place)
+            }
 
             binding.imgFavorite.setOnClickListener {
                 onDeleteClick(item)

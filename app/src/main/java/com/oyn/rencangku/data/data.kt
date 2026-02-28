@@ -3,6 +3,7 @@ package com.oyn.rencangku.data
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
+@Suppress("DEPRECATED_ANNOTATION")
 @Parcelize
 data class CulinaryPlace(
     val id: Int,
@@ -25,7 +26,8 @@ data class Favorite(
     val id: Int,
     val created_at: String,
     val users_id: Int,
-    val culinary_places_id: Int
+    val culinary_places_id: Int,
+    val _culinary_places: CulinaryPlace?
 )
 
 data class FavoriteRequest(
