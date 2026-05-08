@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.data.User
+import com.oyn.rencangku.network.ApiClient
 import com.oyn.rencangku.network.ApiService
 import kotlinx.coroutines.launch
 
@@ -23,15 +24,22 @@ class ProfileViewModel(
     fun loadProfile() {
         viewModelScope.launch {
             try {
-                val token = sessionManager.getToken()
-
-                if (token.isNullOrEmpty()) {
-                    _error.value = "Session habis, silakan login ulang"
+                val userId = sessionManager.getUserId()
+                if (userId == -1) {
+                    _error.value = "Session habis"
                     return@launch
                 }
 
-                val user = apiService.getProfile("Bearer $token")
-                _user.value = user
+                val apiKey = ApiClient.API_KEY
+                val auth = "Bearer $apiKey"
+
+                val result = apiService.getProfile(
+                    apiKey = apiKey,
+                    auth = auth,
+                    id = sessionManager.getUserId().toString()
+                )
+
+                _user.value = result.firstOrNull()
 
             } catch (e: Exception) {
                 _error.value = e.message ?: "Gagal memuat data profil"

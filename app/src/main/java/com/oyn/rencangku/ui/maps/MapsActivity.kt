@@ -11,6 +11,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.databinding.ActivityMapsBinding
 import com.oyn.rencangku.ui.detailResto.DetailRestoActivity
 import com.oyn.rencangku.ui.home.CulinaryAdapter
@@ -22,14 +23,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapsBinding
     private lateinit var mMap: GoogleMap
     private lateinit var culinaryAdapter: CulinaryAdapter
-    private val repository = HomeRepository()
-
+    private lateinit var repository: HomeRepository
+    private lateinit var sessionManager: SessionManager
     private var latitude = 0.0
     private var longitude = 0.0
     private var restaurantName = ""
     private var restaurantAddress = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        sessionManager = SessionManager(this)
+        repository = HomeRepository(sessionManager)
+
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)

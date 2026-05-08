@@ -19,7 +19,7 @@ class CulinaryViewHolder(
             item.address ?: "-"
 
         binding.tvRatings.text =
-            item.rating ?: "0.0"
+            item.rating?.let { "$it ⭐" } ?: "-"
 
         binding.tvCategoriSuhu.text =
             item.categorize_weather ?: ""

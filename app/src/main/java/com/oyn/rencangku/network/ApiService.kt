@@ -1,19 +1,14 @@
 package com.oyn.rencangku.network
 
-import com.oyn.rencangku.data.AuthResponse
 import com.oyn.rencangku.data.CulinaryPlace
 import com.oyn.rencangku.data.Favorite
 import com.oyn.rencangku.data.FavoriteRequest
-import com.oyn.rencangku.data.LoginRequest
-import com.oyn.rencangku.data.LoginResponse
 import com.oyn.rencangku.data.Review
 import com.oyn.rencangku.data.ReviewRequest
 import com.oyn.rencangku.data.SignupRequest
 import com.oyn.rencangku.data.User
 import com.oyn.rencangku.data.UserInteraction
 import com.oyn.rencangku.data.UserInteractionRequest
-import com.oyn.rencangku.data.UserPreference
-import com.oyn.rencangku.data.UserPreferenceRequest
 import retrofit2.http.GET
 
 import retrofit2.http.*
@@ -24,10 +19,16 @@ interface ApiService {
        CULINARY PLACES
        ========================= */
     @GET("culinary_places")
-    suspend fun getCulinaryPlaces(): List<CulinaryPlace>
+    suspend fun getCulinaryPlaces(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String
+    ): List<CulinaryPlace>
 
     @GET("culinary_places/{id}")
     suspend fun getCulinaryPlaceDetail(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String,
         @Path("id") id: Int
     ): CulinaryPlace
 
@@ -35,59 +36,86 @@ interface ApiService {
     /* =========================
        FAVORITES
        ========================= */
-    @GET("favorites")
+    @GET("favorites?select=*,culinary_places(*)")
     suspend fun getFavorites(
-        @Header("Authorization") token: String
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String // tetap
     ): List<Favorite>
 
     @GET("favorites/{id}")
     suspend fun getFavoriteDetail(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String,
         @Path("id") id: Int
     ): Favorite
 
     @POST("favorites")
     suspend fun addFavorite(
-        @Header("Authorization") token: String,
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Header("Prefer") prefer: String = "return=representation",
         @Body request: FavoriteRequest
-    ): Favorite
+    ): List<Favorite>
 
     @PATCH("favorites/{id}")
     suspend fun updateFavorite(
-        @Header("Authorization") token: String,
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String,
         @Path("id") id: Int,
         @Body request: FavoriteRequest
     ): Favorite
 
-    @DELETE("favorites/{id}")
+    @DELETE("favorites")
     suspend fun deleteFavorite(
-        @Header("Authorization") token: String,
-        @Path("id") id: Int
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String,
+        @Query("id") id: String
     )
 
     /* =========================
        REVIEWS
        ========================= */
     @GET("reviews")
-    suspend fun getReviews(): List<Review>
+    suspend fun getReviews(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String
+    ): List<Review>
 
     @GET("reviews/{id}")
     suspend fun getReviewDetail(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String,
         @Path("id") id: Int
     ): Review
 
     @POST("reviews")
     suspend fun addReview(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String,
         @Body request: ReviewRequest
     ): Review
 
     @PATCH("reviews/{id}")
     suspend fun updateReview(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String,
         @Path("id") id: Int,
         @Body request: ReviewRequest
     ): Review
 
     @DELETE("reviews/{id}")
     suspend fun deleteReview(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String,
         @Path("id") id: Int
     )
 
@@ -96,56 +124,49 @@ interface ApiService {
        USER INTERACTIONS
        ========================= */
     @GET("user_interactions")
-    suspend fun getUserInteractions(): List<UserInteraction>
+    suspend fun getUserInteractions(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("users_id") userId: String
+    ): List<UserInteraction>
 
     @GET("user_interactions/{id}")
     suspend fun getUserInteractionDetail(
+        @Header("apikey") apiKey: String,
+
+        @Query("users_id") userId: String,
         @Path("id") id: Int
     ): UserInteraction
 
     @POST("user_interactions")
     suspend fun addUserInteraction(
+        @Header("apikey") apiKey: String,
+        @Query("users_id") userId: String,
         @Body request: UserInteractionRequest
     ): UserInteraction
-
-
-    /* =========================
-       USER PREFERENCES
-       ========================= */
-    @GET("user_preferences")
-    suspend fun getUserPreferences(): List<UserPreference>
-
-    @GET("user_preferences/{id}")
-    suspend fun getUserPreferenceDetail(
-        @Path("id") id: Int
-    ): UserPreference
-
-    @POST("user_preferences")
-    suspend fun addUserPreference(
-        @Body request: UserPreferenceRequest
-    ): UserPreference
-
-    @PATCH("user_preferences/{id}")
-    suspend fun updateUserPreference(
-        @Path("id") id: Int,
-        @Body request: UserPreferenceRequest
-    ): UserPreference
 
     /* =========================
         USERS
        ========================= */
-    @POST("auth/login")
+    @GET("users")
     suspend fun login(
-        @Body request: LoginRequest
-    ): LoginResponse
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("email") email: String,
+        @Query("password") password: String
+    ): List<User>
 
-    @POST("auth/signup")
+    @POST("users")
     suspend fun signup(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
         @Body request: SignupRequest
-    ): AuthResponse
-
-    @GET("auth/me")
-    suspend fun getProfile(
-        @Header("Authorization") token: String
     ): User
+
+    @GET("users")
+    suspend fun getProfile(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("id") id: String
+    ): List<User>
 }

@@ -85,64 +85,50 @@ class DetailRestoActivity : AppCompatActivity() {
         }
     }
     private fun bindRestaurantData(restaurant: CulinaryPlace) {
-        binding.tvRestaurantDetail.text = restaurant.title ?: "Nama tidak tersedia"
+        binding.tvRestaurantDetail.text = restaurant.title
         binding.tvDetailAddress.text = restaurant.address ?: "Alamat tidak tersedia"
         binding.tvPhone.text = restaurant.phone ?: "Nomor telepon tidak tersedia"
         binding.tvPriceRange.text = restaurant.price_range ?: "Harga tidak tersedia"
         binding.tvCategoriSuhuDetail.text = restaurant.categorize_weather ?: "Informasi cuaca tidak tersedia"
         binding.tvratingsDetail.text =
-            if (!restaurant.rating.isNullOrEmpty())
-                "${restaurant.rating} (${restaurant.rating_count ?: "0"})"
+            if (restaurant.rating != null)
+                "${restaurant.rating} (${restaurant.rating_count ?: 0})"
             else "0"
 
         setupOperationalHours(restaurant.open_hours)
     }
 
-    private fun setupOperationalHours(jsonString: String?) {
+    private fun setupOperationalHours(openHours: Map<String, List<String>>?) {
 
-        if (jsonString.isNullOrEmpty()) return
+        if (openHours == null) return
 
-        try {
-            val cleanedJson = jsonString.replace("'", "\"")
-            val jsonObject = JSONObject(cleanedJson)
+        val orderedDays = listOf(
+            "Senin", "Selasa", "Rabu", "Kamis",
+            "Jumat", "Sabtu", "Minggu"
+        )
 
-            val orderedDays = listOf(
-                "Senin",
-                "Selasa",
-                "Rabu",
-                "Kamis",
-                "Jumat",
-                "Sabtu",
-                "Minggu"
-            )
+        val list = mutableListOf<Pair<String, String>>()
 
-            val list = mutableListOf<Pair<String, String>>()
-
-            for (day in orderedDays) {
-
-                val array = jsonObject.optJSONArray(day)
-
-                val time = if (array != null && array.length() > 0)
-                    array.getString(0)
-                else "Tutup"
-
-                list.add(day to time)
+        for (day in orderedDays) {
+            val timeList = openHours[day]
+            val time = if (!timeList.isNullOrEmpty()) {
+                timeList[0]
+            } else {
+                "Tutup"
             }
+            list.add(day to time)
+        }
 
-            binding.rvOperationalHours.apply {
-                layoutManager = LinearLayoutManager(this@DetailRestoActivity)
-                adapter = OperationalHoursAdapter(list)
-            }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
+        binding.rvOperationalHours.apply {
+            layoutManager = LinearLayoutManager(this@DetailRestoActivity)
+            adapter = OperationalHoursAdapter(list)
         }
     }
 
     private fun openMaps(restaurant: CulinaryPlace) {
 
-        val lat = restaurant.latitude?.toDoubleOrNull()
-        val lng = restaurant.longitude?.toDoubleOrNull()
+        val lat = restaurant.latitude
+        val lng = restaurant.longitude
 
         if (lat == null || lng == null) {
             Toast.makeText(this, "Koordinat tidak tersedia", Toast.LENGTH_SHORT).show()
@@ -156,7 +142,7 @@ class DetailRestoActivity : AppCompatActivity() {
             putExtra("RESTAURANT_ADDRESS", restaurant.address)
             putExtra("CATEGORY_ID", restaurant.category)
             putExtra("RESTAURANT_WEATHER", restaurant.categorize_weather)
-            putExtra("RESTAURANT_RATING", restaurant.rating)
+            putExtra("RESTAURANT_RATING", restaurant.rating ?: 0.0)
         }
 
         startActivity(intent)
@@ -166,8 +152,8 @@ class DetailRestoActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-
-                val token = "Bearer ${sessionManager.getToken()}"
+                val apiKey = ApiClient.API_KEY
+                val auth = "Bearer $apiKey"
                 val userId = sessionManager.getUserId()
 
                 if (userId == -1) {
@@ -180,30 +166,47 @@ class DetailRestoActivity : AppCompatActivity() {
                 }
 
                 if (!isFavorite) {
-                    ApiClient.RestaurantApi.addFavorite(
-                        token,
-                        FavoriteRequest(
+                    val result = ApiClient.RestaurantApi.addFavorite(
+                        apiKey = apiKey,
+                        auth = auth,
+                        request = FavoriteRequest(
                             users_id = userId,
                             culinary_places_id = data.id
                         )
                     )
-                    isFavorite = true
-                    Toast.makeText(
-                        this@DetailRestoActivity,
-                        "Ditambahkan ke favorit",
-                        Toast.LENGTH_SHORT
-                    ).show()
+
+                    if (result.isNotEmpty()) {
+                        isFavorite = true
+                        Toast.makeText(this@DetailRestoActivity,
+                            "Ditambahkan ke favorit",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
 
                 } else {
                     val favorites =
-                        ApiClient.RestaurantApi.getFavorites(token)
+                        ApiClient.RestaurantApi.getFavorites(
+                            apiKey,
+                            auth = auth,
+                            userId = "eq.$userId"
+                        )
 
-                    val fav = favorites.find {
+                    val fav = favorites.firstOrNull {
                         it.culinary_places_id == data.id
                     }
 
-                    fav?.let {
-                        ApiClient.RestaurantApi.deleteFavorite(token, it.id)
+                    if (fav != null) {
+                        ApiClient.RestaurantApi.deleteFavorite(
+                            apiKey = apiKey,
+                            auth = auth,
+                            userId = "eq.$userId",
+                            id = "eq.${fav.id}"
+                        )
+
+                        isFavorite = false
+                        Toast.makeText(this@DetailRestoActivity, "Dihapus dari favorit", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@DetailRestoActivity, "Data favorite tidak ditemukan", Toast.LENGTH_SHORT).show()
                     }
 
                     isFavorite = false
@@ -232,8 +235,15 @@ class DetailRestoActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val token = "Bearer ${sessionManager.getToken()}"
-                val favorites = ApiClient.RestaurantApi.getFavorites(token)
+                val apiKey = ApiClient.API_KEY
+                val auth = "Bearer $apiKey"
+                val userId = sessionManager.getUserId().toString()
+
+                val favorites = ApiClient.RestaurantApi.getFavorites(
+                    apiKey = apiKey,
+                    auth = auth,
+                    userId = "eq.$userId"
+                )
 
                 isFavorite = favorites.any {
                     it.culinary_places_id == selectedRestaurant?.id

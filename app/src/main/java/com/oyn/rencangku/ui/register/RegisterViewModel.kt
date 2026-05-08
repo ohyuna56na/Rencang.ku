@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oyn.rencangku.data.AuthResponse
 import com.oyn.rencangku.data.SignupRequest
+import com.oyn.rencangku.network.ApiClient
 import com.oyn.rencangku.network.ApiService
 import kotlinx.coroutines.launch
 
@@ -20,10 +21,21 @@ class RegisterViewModel(
     ) {
         viewModelScope.launch {
             try {
+                val apiKey = ApiClient.API_KEY
+                val auth = "Bearer $apiKey"
+
                 val response = apiService.signup(
-                    SignupRequest(name, email, password)
+                    apiKey = apiKey,
+                    auth = auth,
+                    request = SignupRequest(name, email, password)
                 )
-                onSuccess(response)
+
+                onSuccess(
+                    AuthResponse(
+                        authToken = response.id.toString(),
+                        user = response
+                    )
+                )
             } catch (e: Exception) {
                 onError(e.message ?: "Signup gagal")
             }

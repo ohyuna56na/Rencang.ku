@@ -102,17 +102,11 @@ class SignInActivity : AppCompatActivity() {
                 lifecycleScope.launch {
 
                     try {
-                        // 1️⃣ Simpan token
-                        sessionManager.saveLogin(result.authToken)
+                        sessionManager.saveUserLogin(result.id)
+                        sessionManager.setLogin(true)
 
-                        // 2️⃣ Ambil profile pakai coroutine
-                        val token = "Bearer ${sessionManager.getToken()}"
-                        val user = ApiClient.RestaurantApi.getProfile(token)
+                        Log.d("SESSION", "UserID: ${result.id}")
 
-                        // 3️⃣ Simpan user ID
-                        sessionManager.saveUserId(user.id)
-
-                        Log.d("SESSION", "Token: ${sessionManager.getToken()}")
                         Log.d("SESSION", "UserID: ${sessionManager.getUserId()}")
 
                         Toast.makeText(

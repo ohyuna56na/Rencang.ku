@@ -30,7 +30,7 @@ class FavoriteAdapter(
 
             binding.tvRestaurantName.text = place.title
             binding.tvRestaurantAddress.text = place.address
-            binding.TvRatings.text = place.rating ?: "0.0"
+            binding.TvRatings.text = place.rating?.let { String.format("%.1f ⭐", it) } ?: "-"
             binding.tvCategoriSuhu.text = place.categorize_weather
 
             binding.root.setOnClickListener {

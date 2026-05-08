@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.data.CulinaryPlace
 import com.oyn.rencangku.data.User
+import com.oyn.rencangku.network.ApiClient
 import com.oyn.rencangku.network.ApiService
 import com.oyn.rencangku.weather.ApiConfig
 import com.oyn.rencangku.weather.WeatherResponse
@@ -23,7 +24,7 @@ class HomeViewModel(
     private val _locationName = MutableLiveData<String>()
     val locationName: LiveData<String> = _locationName
 
-    private val repository = HomeRepository()
+    private val repository = HomeRepository(sessionManager)
 
     private val _culinaryPlaces = MutableLiveData<List<CulinaryPlace>>()
     val culinaryPlaces: LiveData<List<CulinaryPlace>> = _culinaryPlaces
@@ -40,14 +41,23 @@ class HomeViewModel(
     fun getUsername() {
         viewModelScope.launch {
             try {
-                val token = sessionManager.getToken()
-                if (token.isNullOrEmpty()) {
+                val apiKey = ApiClient.API_KEY
+                val auth = "Bearer $apiKey"
+                val userId = sessionManager.getUserId()
+                if (userId == -1) {
                     _error.value = "Session habis"
                     return@launch
                 }
 
-                val user = apiService.getProfile("Bearer $token")
-                _user.value = user
+                val response = apiService.getProfile(
+                    apiKey = apiKey,
+                    auth = auth,
+                    id = "eq.$userId"
+                )
+
+                if (response.isNotEmpty()) {
+                    _user.value = response[0]
+                }
 
             } catch (e: Exception) {
                 _error.value = e.message ?: "Gagal mengambil data user"
