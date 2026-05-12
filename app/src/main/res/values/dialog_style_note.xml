@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="PreferenceDialogTheme"
+        parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnSurface">@color/onBackground</item>
+        <item name="android:background">@color/surface</item>
+
+        <item name="buttonBarPositiveButtonStyle">
+            @style/DialogPositiveButton
+        </item>
+
+        <item name="buttonBarNegativeButtonStyle">
+            @style/DialogNegativeButton
+        </item>
+    </style>
+
+    <style name="DialogPositiveButton"
+        parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="DialogNegativeButton"
+        parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+
+        <item name="android:textColor">@color/tertiary</item>
+    </style>
+
+</resources>

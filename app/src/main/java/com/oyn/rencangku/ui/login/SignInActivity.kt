@@ -29,9 +29,11 @@ class SignInActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sessionManager = SessionManager(this)
+
+        // Sudah login → langsung ke MainActivity
+        // Cek preference dilakukan 1x di HomeFragment saja
         if (sessionManager.isLogin()) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
+            goToMain()
             return
         }
 
@@ -57,7 +59,6 @@ class SignInActivity : AppCompatActivity() {
                 if (isVisible) R.drawable.ic_visibility
                 else R.drawable.ic_visibility_off
             )
-
             binding.passwordInputLogin.setSelection(
                 binding.passwordInputLogin.text.length
             )
@@ -66,7 +67,7 @@ class SignInActivity : AppCompatActivity() {
 
     private fun setupAction() {
         binding.LoginButton.setOnClickListener {
-            val email = binding.emaillogin.text.toString().trim()
+            val email    = binding.emaillogin.text.toString().trim()
             val password = binding.passwordInputLogin.text.toString().trim()
 
             when {
@@ -85,29 +86,21 @@ class SignInActivity : AppCompatActivity() {
             startActivity(Intent(this, CreateAccountActivity::class.java))
         }
 
-        binding.IvBack.setOnClickListener {
-            finish()
-        }
+        binding.IvBack.setOnClickListener { finish() }
     }
 
     private fun observeViewModel() {
-
         viewModel.isLoading.observe(this) {
             binding.LoginButton.isEnabled = !it
         }
 
         viewModel.loginResult.observe(this) { result ->
             if (result != null) {
-
                 lifecycleScope.launch {
-
                     try {
                         sessionManager.saveUserLogin(result.id)
                         sessionManager.setLogin(true)
-
                         Log.d("SESSION", "UserID: ${result.id}")
-
-                        Log.d("SESSION", "UserID: ${sessionManager.getUserId()}")
 
                         Toast.makeText(
                             this@SignInActivity,
@@ -115,8 +108,8 @@ class SignInActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        startActivity(Intent(this@SignInActivity, MainActivity::class.java))
-                        finish()
+                        // Langsung ke MainActivity — HomeFragment yang akan cek preference
+                        goToMain()
 
                     } catch (e: Exception) {
                         Toast.makeText(
@@ -126,10 +119,14 @@ class SignInActivity : AppCompatActivity() {
                         ).show()
                     }
                 }
-
             } else {
                 Toast.makeText(this, "Email atau password salah", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun goToMain() {
+        startActivity(Intent(this, MainActivity::class.java))
+        finish()
     }
 }

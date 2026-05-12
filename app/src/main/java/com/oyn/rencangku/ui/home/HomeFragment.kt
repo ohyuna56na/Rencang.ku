@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -20,11 +21,14 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.oyn.rencangku.R
 import com.oyn.rencangku.auth.SessionManager
-import com.oyn.rencangku.data.CulinaryPlace
 import com.oyn.rencangku.databinding.FragmentHomeBinding
 import com.oyn.rencangku.ml.MLApiClient
+import com.oyn.rencangku.ml.RecommendRequest
 import com.oyn.rencangku.network.ApiClient
 import com.oyn.rencangku.ui.detailResto.DetailRestoActivity
+import com.oyn.rencangku.ui.preference.PreferenceActivity
+import com.oyn.rencangku.ui.preference.PreferenceRepository
+import com.oyn.rencangku.ui.preference.Result
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Locale
@@ -35,56 +39,102 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val binding get() = _binding!!
 
     private lateinit var viewModel: HomeViewModel
-
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var adapter: CulinaryAdapter
     private lateinit var sessionManager: SessionManager
+
+    // Repository preference — hanya untuk cek sekali di Home
+    private val preferenceRepository by lazy { PreferenceRepository() }
 
     companion object {
         private const val TAG = "HomeFragment"
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentHomeBinding.bind(view)
-
         sessionManager = SessionManager(requireContext())
-        val factory = HomeViewModelFactory(
-            ApiClient.RestaurantApi,
-            sessionManager
-        )
 
-        viewModel = ViewModelProvider(this, factory)
-            .get(HomeViewModel::class.java)
-
-        Log.d(TAG, "onViewCreated")
+        val factory = HomeViewModelFactory(ApiClient.RestaurantApi, sessionManager)
+        viewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
 
         applySafeArea()
         setupRecyclerView()
         observeViewModel()
         loadData()
+
+        // Cek preference saat HomeFragment pertama kali dibuka
+        checkUserPreference()
+    }
+
+    /**
+     * Cek apakah user sudah punya preference.
+     * Jika belum → tampilkan dialog popup.
+     * Dipanggil 1x saat HomeFragment onViewCreated.
+     */
+    private fun checkUserPreference() {
+        val userId = sessionManager.getUserId()
+        if (userId == -1) return  // belum login, skip
+
+        lifecycleScope.launch {
+            when (val result = preferenceRepository.getUserPreference(userId)) {
+                is Result.Success -> {
+                    if (result.data == null) {
+                        // Belum ada preference → tampilkan dialog
+                        Log.d(TAG, "User $userId belum punya preference")
+                        showNoPreferenceDialog()
+                    } else {
+                        Log.d(TAG, "User $userId sudah punya preference")
+                        // Lanjut normal, tidak perlu apa-apa
+                    }
+                }
+                is Result.Error -> {
+                    // Gagal cek → tidak tampilkan dialog, biarkan user lanjut
+                    Log.e(TAG, "Gagal cek preference: ${result.message}")
+                }
+                is Result.Loading -> { /* tidak akan sampai sini */ }
+            }
+        }
+    }
+
+    /**
+     * Dialog popup yang muncul ketika user belum mengisi preference.
+     * Tombol "Atur Sekarang" → ke PreferenceActivity
+     * Tombol "Nanti Saja"   → tutup dialog, lanjut ke home
+     */
+    private fun showNoPreferenceDialog() {
+        if (!isAdded || activity == null) return
+
+        AlertDialog.Builder(requireContext(), R.style.PreferenceDialogTheme)
+            .setTitle("Preferensi Belum Diatur")
+            .setMessage(
+                "Kamu belum memiliki preferensi kuliner. " +
+                        "Atur preferensimu agar rekomendasi tempat makan " +
+                        "lebih sesuai dengan seleramu! 🍜"
+            )
+            .setPositiveButton("Atur Sekarang") { dialog, _ ->
+                dialog.dismiss()
+                startActivity(Intent(requireContext(), PreferenceActivity::class.java))
+            }
+            .setNegativeButton("Nanti Saja") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setCancelable(false)  // user harus pilih salah satu tombol
+            .show()
     }
 
     private fun applySafeArea() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.nested) { v, insets ->
-            val topInset =
-                insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            v.setPadding(0, topInset, 0, 0)
+            val top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            v.setPadding(0, top, 0, 0)
             insets
         }
     }
 
     private fun setupRecyclerView() {
         adapter = CulinaryAdapter { culinaryPlace ->
-
-            Toast.makeText(
-                requireContext(),
-                culinaryPlace.title,
-                Toast.LENGTH_SHORT
-            ).show()
             val intent = Intent(requireContext(), DetailRestoActivity::class.java)
             intent.putExtra("SELECTED_RESTAURANT", culinaryPlace)
             startActivity(intent)
@@ -96,64 +146,36 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun observeViewModel() {
-
         viewModel.weatherData.observe(viewLifecycleOwner) { weather ->
-            Log.d(TAG, "Weather update: $weather")
             binding.TvWeather.text =
-                weather?.main?.temp?.toInt()?.let { "$it°C" }
-                    ?: "Cuaca tidak tersedia"
+                weather?.main?.temp?.toInt()?.let { "$it°C" } ?: "Cuaca tidak tersedia"
         }
 
         viewModel.locationName.observe(viewLifecycleOwner) { city ->
-            Log.d(TAG, "Location: $city")
             binding.TvLocation.text = city
         }
 
         viewModel.culinaryPlaces.observe(viewLifecycleOwner) { list ->
-            Log.d(TAG, "Culinary data size: ${list.size}")
-
-            adapter.submitList(list)
-
+            if (list.isNotEmpty() && adapter.itemCount == 0) {
+                adapter.submitList(list)
+            }
             val loading = viewModel.isLoading.value ?: false
-
             binding.tvNoResults.visibility =
-                if (!loading && list.isEmpty())
-                    View.VISIBLE
-                else
-                    View.GONE
-
+                if (!loading && list.isEmpty()) View.VISIBLE else View.GONE
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            Log.d(TAG, "Loading state: $isLoading")
-
-            binding.progressBar.visibility =
-                if (isLoading) View.VISIBLE else View.GONE
-
-            if (isLoading) {
-                binding.tvNoResults.visibility = View.GONE
-            }
+            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            if (isLoading) binding.tvNoResults.visibility = View.GONE
         }
-        viewModel.getUsername()
-    }
 
-    private fun loadData() {
-        Log.d(TAG, "loadData() called")
-        observeData()
-        requestLocationPermission()
-        viewModel.loadCulinaryPlaces()
-        loadRecommendations()
-    }
-
-
-    private fun observeData() {
         viewModel.user.observe(viewLifecycleOwner) { user ->
             if (user != null) {
                 val greeting = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
-                    in 5..10 -> "Selamat Pagi"
+                    in 5..10  -> "Selamat Pagi"
                     in 11..14 -> "Selamat Siang"
                     in 15..18 -> "Selamat Sore"
-                    else -> "Selamat Malam"
+                    else      -> "Selamat Malam"
                 }
                 binding.TvNameUsers.text = "$greeting,\n${user.name}!"
             } else {
@@ -164,15 +186,21 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         viewModel.error.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
         }
+
+        viewModel.getUsername()
+    }
+
+    private fun loadData() {
+        requestLocationPermission()
+        viewModel.loadCulinaryPlaces()
+        loadRecommendations()
     }
 
     private fun requestLocationPermission() {
         if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
+                requireContext(), Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            Log.d(TAG, "Request location permission")
             requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE
@@ -184,118 +212,51 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     @SuppressLint("MissingPermission")
     private fun fetchCurrentLocation() {
-        fusedLocationClient =
-            LocationServices.getFusedLocationProviderClient(requireContext())
-
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-            if (location == null) {
-                Log.e(TAG, "Location is NULL")
-                return@addOnSuccessListener
-            }
-
-            Log.d(TAG, "Lat: ${location.latitude}, Lon: ${location.longitude}")
-
+            if (location == null) return@addOnSuccessListener
             val geocoder = Geocoder(requireContext(), Locale.getDefault())
             val city = geocoder
-                .getFromLocation(
-                    location.latitude,
-                    location.longitude,
-                    1
-                )
-                ?.firstOrNull()
-                ?.locality ?: "Lokasi Tidak Diketahui"
-
-            Log.d(TAG, "City detected: $city")
-
+                .getFromLocation(location.latitude, location.longitude, 1)
+                ?.firstOrNull()?.locality ?: "Lokasi Tidak Diketahui"
             viewModel.setLocation(city)
-            viewModel.fetchWeather(
-                location.latitude,
-                location.longitude
-            )
+            viewModel.fetchWeather(location.latitude, location.longitude)
         }
     }
 
     @SuppressLint("MissingPermission")
     private fun getUserLocation(onResult: (Double, Double) -> Unit) {
-
-        fusedLocationClient =
-            LocationServices.getFusedLocationProviderClient(requireContext())
-
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location ->
-
-                if (location != null) {
-
-                    onResult(
-                        location.latitude,
-                        location.longitude
-                    )
-
-                } else {
-
-                    Toast.makeText(
-                        requireContext(),
-                        "Lokasi tidak ditemukan",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                onResult(location.latitude, location.longitude)
+            } else {
+                Toast.makeText(requireContext(), "Lokasi tidak ditemukan", Toast.LENGTH_SHORT).show()
             }
+        }
     }
 
     private fun loadRecommendations() {
-
         val userId = sessionManager.getUserId()
-
         getUserLocation { lat, lon ->
-
             lifecycleScope.launch {
-
                 try {
-
-                    val response =
-                        MLApiClient.api.getRecommendations(
-                            userId = userId,
-                            lat = lat,
-                            lon = lon,
-                            weather = "semua"
+                    val response = MLApiClient.api.getRecommendations(
+                        RecommendRequest(
+                            userId      = userId,
+                            latitude    = lat,
+                            longitude   = lon,
+                            topN        = 10,
+                            autoWeather = true
                         )
-
-                    val recommendations = response.recommendations.map {
-
-                        CulinaryPlace(
-                            id = it.id,
-                            title = it.title,
-                            category = it.category,
-                            rating = it.rating,
-                            page_url = it.page_url,
-                            header_image = it.header_image,
-                            rating_count = it.rating_count,
-                            price_range = it.price_range,
-                            address = it.address,
-                            latitude = it.latitude,
-                            longitude = it.longitude,
-                            phone = it.phone,
-                            open_hours = it.open_hours,
-                            categorize_weather = it.categorize_weather
-                        )
-                    }
-
-                    adapter.submitList(recommendations)
-
-                    Log.d(
-                        "ML_RESPONSE",
-                        recommendations.toString()
                     )
-
+                    if (response.recommendations.isNotEmpty()) {
+                        adapter.submitList(response.recommendations)
+                        Log.d(TAG, "ML loaded: ${response.recommendations.size} items, mode=${response.mode}")
+                    }
                 } catch (e: Exception) {
-
-                    e.printStackTrace()
-
-                    Toast.makeText(
-                        requireContext(),
-                        "Gagal load rekomendasi",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Log.e(TAG, "loadRecommendations error: ${e.message}")
+                    Toast.makeText(requireContext(), "Gagal load rekomendasi", Toast.LENGTH_SHORT).show()
                 }
             }
         }

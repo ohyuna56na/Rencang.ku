@@ -9,6 +9,9 @@ import com.oyn.rencangku.data.SignupRequest
 import com.oyn.rencangku.data.User
 import com.oyn.rencangku.data.UserInteraction
 import com.oyn.rencangku.data.UserInteractionRequest
+import com.oyn.rencangku.data.UserPreferenceRequest
+import com.oyn.rencangku.data.UserPreferenceResponse
+import retrofit2.Response
 import retrofit2.http.GET
 
 import retrofit2.http.*
@@ -75,6 +78,34 @@ interface ApiService {
         @Query("users_id") userId: String,
         @Query("id") id: String
     )
+
+    /* =========================
+       PREFERENCE
+       ========================= */
+    @GET("users_preferences")
+    suspend fun checkUserPreference(
+        @Header("apikey") apiKey: String = ApiClient.API_KEY,
+        @Header("Authorization") auth: String = "Bearer ${ApiClient.API_KEY}",
+        @Query("users_id") userId: String,
+        @Query("select") select: String = "*"
+    ): Response<List<UserPreferenceResponse>>
+
+    @POST("users_preferences")
+    suspend fun saveUserPreference(
+        @Header("apikey") apiKey: String = ApiClient.API_KEY,
+        @Header("Authorization") auth: String = "Bearer ${ApiClient.API_KEY}",
+        @Header("Prefer") prefer: String = "return=representation",
+        @Body request: UserPreferenceRequest
+    ): Response<List<UserPreferenceResponse>>
+
+    @PATCH("users_preferences")
+    suspend fun updateUserPreference(
+        @Header("apikey") apiKey: String = ApiClient.API_KEY,
+        @Header("Authorization") auth: String = "Bearer ${ApiClient.API_KEY}",
+        @Header("Prefer") prefer: String = "return=representation",
+        @Query("users_id") userId: String,
+        @Body request: UserPreferenceRequest
+    ): Response<List<UserPreferenceResponse>>
 
     /* =========================
        REVIEWS

@@ -9,7 +9,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.oyn.rencangku.ui.maps.MapsActivity
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.oyn.rencangku.R
@@ -18,10 +17,10 @@ import com.oyn.rencangku.data.CulinaryPlace
 import com.oyn.rencangku.data.FavoriteRequest
 import com.oyn.rencangku.databinding.ActivityDetailRestoBinding
 import com.oyn.rencangku.network.ApiClient
+import com.oyn.rencangku.ui.maps.MapsActivity
 import kotlinx.coroutines.launch
-import org.json.JSONObject
 
-@Suppress("DEPRECATION", "UNREACHABLE_CODE")
+@Suppress("DEPRECATION")
 class DetailRestoActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailRestoBinding
@@ -36,10 +35,9 @@ class DetailRestoActivity : AppCompatActivity() {
         binding = ActivityDetailRestoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        Log.d(TAG, "Activity Created")
         sessionManager = SessionManager(this)
+
         try {
-            // Inisialisasi Google Places API
             if (!Places.isInitialized()) {
                 Places.initialize(applicationContext, "AIzaSyC5z7pB1rtnC_cgB0ErIbi8pwk0y2b9zbY")
             }
@@ -48,9 +46,9 @@ class DetailRestoActivity : AppCompatActivity() {
             Log.e(TAG, "Error initializing Places API: ${e.message}")
         }
 
-        // Ambil data restoran dari Intent
-        selectedRestaurant =
-            intent.getParcelableExtra("SELECTED_RESTAURANT")
+        // ── Ambil CulinaryPlace dari Intent ──────────────────────
+        // CulinaryPlace sudah @Parcelize, jadi bisa langsung getParcelableExtra
+        selectedRestaurant = intent.getParcelableExtra<CulinaryPlace>("SELECTED_RESTAURANT")
 
         if (selectedRestaurant == null) {
             Toast.makeText(this, "Data restoran tidak ditemukan", Toast.LENGTH_SHORT).show()
@@ -59,64 +57,44 @@ class DetailRestoActivity : AppCompatActivity() {
         }
 
         bindRestaurantData(selectedRestaurant!!)
-
-        // Tombol kembali
-        binding.backButtonDetail.setOnClickListener { finish() }
-
-        // Tombol cek lokasi
-        binding.ButtonCekLokasi.setOnClickListener {
-            openMaps(selectedRestaurant!!)
-        }
-
-        binding.imgFavorite.setOnClickListener {
-            toggleFavorite(selectedRestaurant!!)
-        }
-
         applySafeArea()
         checkIsFavoriteFromAPI()
+
+        binding.backButtonDetail.setOnClickListener { finish() }
+        binding.ButtonCekLokasi.setOnClickListener { openMaps(selectedRestaurant!!) }
+        binding.imgFavorite.setOnClickListener { toggleFavorite(selectedRestaurant!!) }
     }
 
     private fun applySafeArea() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.nested) { v, insets ->
-            val topInset =
-                insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
-            v.setPadding(0, topInset, 0, 0)
+            val top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            v.setPadding(0, top, 0, 0)
             insets
         }
     }
+
     private fun bindRestaurantData(restaurant: CulinaryPlace) {
-        binding.tvRestaurantDetail.text = restaurant.title
-        binding.tvDetailAddress.text = restaurant.address ?: "Alamat tidak tersedia"
-        binding.tvPhone.text = restaurant.phone ?: "Nomor telepon tidak tersedia"
-        binding.tvPriceRange.text = restaurant.price_range ?: "Harga tidak tersedia"
-        binding.tvCategoriSuhuDetail.text = restaurant.categorize_weather ?: "Informasi cuaca tidak tersedia"
-        binding.tvratingsDetail.text =
-            if (restaurant.rating != null)
-                "${restaurant.rating} (${restaurant.rating_count ?: 0})"
+        // Pakai display properties — otomatis resolve dari ML API atau Supabase
+        binding.tvRestaurantDetail.text   = restaurant.displayTitle
+        binding.tvDetailAddress.text      = restaurant.displayAddress.ifEmpty { "Alamat tidak tersedia" }
+        binding.tvPhone.text              = restaurant.phone ?: "Nomor telepon tidak tersedia"
+        binding.tvPriceRange.text         = restaurant.displayPriceRange.ifEmpty { "Harga tidak tersedia" }
+        binding.tvCategoriSuhuDetail.text = restaurant.displayWeather.ifEmpty { "Informasi cuaca tidak tersedia" }
+        binding.tvratingsDetail.text      =
+            if (restaurant.displayRating > 0)
+                "${restaurant.displayRating} (${restaurant.displayRatingCount})"
             else "0"
 
-        setupOperationalHours(restaurant.open_hours)
+        setupOperationalHours(restaurant.openHours)
     }
 
     private fun setupOperationalHours(openHours: Map<String, List<String>>?) {
-
         if (openHours == null) return
 
-        val orderedDays = listOf(
-            "Senin", "Selasa", "Rabu", "Kamis",
-            "Jumat", "Sabtu", "Minggu"
-        )
-
-        val list = mutableListOf<Pair<String, String>>()
-
-        for (day in orderedDays) {
-            val timeList = openHours[day]
-            val time = if (!timeList.isNullOrEmpty()) {
-                timeList[0]
-            } else {
-                "Tutup"
-            }
-            list.add(day to time)
+        val orderedDays = listOf("Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu")
+        val list = orderedDays.map { day ->
+            val time = openHours[day]?.firstOrNull() ?: "Tutup"
+            day to time
         }
 
         binding.rvOperationalHours.apply {
@@ -126,9 +104,8 @@ class DetailRestoActivity : AppCompatActivity() {
     }
 
     private fun openMaps(restaurant: CulinaryPlace) {
-
-        val lat = restaurant.latitude
-        val lng = restaurant.longitude
+        val lat = restaurant.displayLatitude
+        val lng = restaurant.displayLongitude
 
         if (lat == null || lng == null) {
             Toast.makeText(this, "Koordinat tidak tersedia", Toast.LENGTH_SHORT).show()
@@ -138,128 +115,99 @@ class DetailRestoActivity : AppCompatActivity() {
         val intent = Intent(this, MapsActivity::class.java).apply {
             putExtra("LATITUDE", lat)
             putExtra("LONGITUDE", lng)
-            putExtra("RESTAURANT_NAME", restaurant.title)
-            putExtra("RESTAURANT_ADDRESS", restaurant.address)
-            putExtra("CATEGORY_ID", restaurant.category)
-            putExtra("RESTAURANT_WEATHER", restaurant.categorize_weather)
-            putExtra("RESTAURANT_RATING", restaurant.rating ?: 0.0)
+            putExtra("RESTAURANT_NAME", restaurant.displayTitle)
+            putExtra("RESTAURANT_ADDRESS", restaurant.displayAddress)
+            putExtra("CATEGORY_ID", restaurant.displayCategory)
+            putExtra("RESTAURANT_WEATHER", restaurant.displayWeather)
+            putExtra("RESTAURANT_RATING", restaurant.displayRating)
         }
-
         startActivity(intent)
     }
 
     private fun toggleFavorite(data: CulinaryPlace) {
-
         lifecycleScope.launch {
             try {
                 val apiKey = ApiClient.API_KEY
-                val auth = "Bearer $apiKey"
+                val auth   = "Bearer $apiKey"
                 val userId = sessionManager.getUserId()
 
                 if (userId == -1) {
-                    Toast.makeText(
-                        this@DetailRestoActivity,
-                        "User belum login",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this@DetailRestoActivity, "User belum login", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                // id tempat — wajib ada, kalau null skip
+                val placeId = data.id ?: run {
+                    Toast.makeText(this@DetailRestoActivity, "ID tempat tidak valid", Toast.LENGTH_SHORT).show()
                     return@launch
                 }
 
                 if (!isFavorite) {
                     val result = ApiClient.RestaurantApi.addFavorite(
-                        apiKey = apiKey,
-                        auth = auth,
+                        apiKey  = apiKey,
+                        auth    = auth,
                         request = FavoriteRequest(
-                            users_id = userId,
-                            culinary_places_id = data.id
+                            users_id            = userId,
+                            culinary_places_id  = placeId
                         )
                     )
-
                     if (result.isNotEmpty()) {
                         isFavorite = true
-                        Toast.makeText(this@DetailRestoActivity,
-                            "Ditambahkan ke favorit",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(this@DetailRestoActivity, "Ditambahkan ke favorit", Toast.LENGTH_SHORT).show()
                     }
 
                 } else {
-                    val favorites =
-                        ApiClient.RestaurantApi.getFavorites(
-                            apiKey,
-                            auth = auth,
-                            userId = "eq.$userId"
-                        )
-
-                    val fav = favorites.firstOrNull {
-                        it.culinary_places_id == data.id
-                    }
+                    val favorites = ApiClient.RestaurantApi.getFavorites(
+                        apiKey = apiKey,
+                        auth   = auth,
+                        userId = "eq.$userId"
+                    )
+                    val fav = favorites.firstOrNull { it.culinary_places_id == placeId }
 
                     if (fav != null) {
                         ApiClient.RestaurantApi.deleteFavorite(
                             apiKey = apiKey,
-                            auth = auth,
+                            auth   = auth,
                             userId = "eq.$userId",
-                            id = "eq.${fav.id}"
+                            id     = "eq.${fav.id}"
                         )
-
                         isFavorite = false
                         Toast.makeText(this@DetailRestoActivity, "Dihapus dari favorit", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this@DetailRestoActivity, "Data favorite tidak ditemukan", Toast.LENGTH_SHORT).show()
                     }
-
-                    isFavorite = false
-                    Toast.makeText(
-                        this@DetailRestoActivity,
-                        "Dihapus dari favorit",
-                        Toast.LENGTH_SHORT
-                    ).show()
                 }
 
                 updateFavoriteIcon()
 
             } catch (e: Exception) {
-                Log.e("FAVORITE_ERROR", e.message ?: "Unknown error")
-                e.printStackTrace()
-                Toast.makeText(
-                    this@DetailRestoActivity,
-                    "Gagal update favorite",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Log.e(TAG, "toggleFavorite error: ${e.message}")
+                Toast.makeText(this@DetailRestoActivity, "Gagal update favorite", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun checkIsFavoriteFromAPI() {
-
         lifecycleScope.launch {
             try {
                 val apiKey = ApiClient.API_KEY
-                val auth = "Bearer $apiKey"
+                val auth   = "Bearer $apiKey"
                 val userId = sessionManager.getUserId().toString()
 
                 val favorites = ApiClient.RestaurantApi.getFavorites(
                     apiKey = apiKey,
-                    auth = auth,
+                    auth   = auth,
                     userId = "eq.$userId"
                 )
-
-                isFavorite = favorites.any {
-                    it.culinary_places_id == selectedRestaurant?.id
-                }
-
+                isFavorite = favorites.any { it.culinary_places_id == selectedRestaurant?.id }
                 updateFavoriteIcon()
-
             } catch (_: Exception) {}
         }
     }
+
     private fun updateFavoriteIcon() {
         binding.imgFavorite.setImageResource(
-            if (isFavorite)
-                R.drawable.favorite_bold
-            else
-                R.drawable.favorite_line
+            if (isFavorite) R.drawable.favorite_bold else R.drawable.favorite_line
         )
     }
 
@@ -267,9 +215,8 @@ class DetailRestoActivity : AppCompatActivity() {
         super.onDestroy()
         try {
             (placesClient as? AutoCloseable)?.close()
-            Log.d("DetailRestoActivity", "PlacesClient shutdown successfully")
         } catch (e: Exception) {
-            Log.e("DetailRestoActivity", "Error shutting down PlacesClient: ${e.message}")
+            Log.e(TAG, "Error shutting down PlacesClient: ${e.message}")
         }
     }
 }

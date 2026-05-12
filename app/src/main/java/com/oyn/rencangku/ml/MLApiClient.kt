@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object MLApiClient {
 
     private const val BASE_URL =
-        "https://najwaaulia05-api-ml.hf.space/"
+        "https://najwaaulia05-API-Xano.hf.space/"
 
     val api: MLApiService by lazy {
 

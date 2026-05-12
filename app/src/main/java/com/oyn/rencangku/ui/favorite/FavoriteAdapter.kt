@@ -25,29 +25,22 @@ class FavoriteAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: Favorite) {
-
             val place = item._culinary_places ?: return
 
-            binding.tvRestaurantName.text = place.title
-            binding.tvRestaurantAddress.text = place.address
-            binding.TvRatings.text = place.rating?.let { String.format("%.1f ⭐", it) } ?: "-"
-            binding.tvCategoriSuhu.text = place.categorize_weather
+            // Pakai display properties — otomatis ambil dari ML API atau Supabase
+            binding.tvRestaurantName.text    = place.displayTitle
+            binding.tvRestaurantAddress.text = place.displayAddress.ifEmpty { "-" }
+            binding.TvRatings.text           = String.format("%.1f ⭐", place.displayRating)
+            binding.tvCategoriSuhu.text      = place.displayWeather
 
-            binding.root.setOnClickListener {
-                onItemClick(place)
-            }
-
-            binding.imgFavorite.setOnClickListener {
-                onDeleteClick(item)
-            }
+            binding.root.setOnClickListener { onItemClick(place) }
+            binding.imgFavorite.setOnClickListener { onDeleteClick(item) }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemFavoriteBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
+            LayoutInflater.from(parent.context), parent, false
         )
         return ViewHolder(binding)
     }

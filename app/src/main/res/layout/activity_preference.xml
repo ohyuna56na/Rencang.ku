@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!-- ── Header ─────────────────────────────────────── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="52dp"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hai, Selamat Datang! 👋"
+            android:textSize="13sp"
+            android:textColor="@color/tertiary"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Atur Preferensi Makanmu"
+            android:textSize="22sp"
+            android:textColor="@color/secondary"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bantu kami mengenal seleramu agar rekomendasi lebih tepat."
+            android:textSize="13sp"
+            android:textColor="@color/onSurface"
+            android:alpha="0.6"
+            android:layout_marginTop="6dp" />
+
+    </LinearLayout>
+
+    <!-- ── Step Indicator ────────────────────────────── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="28dp"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+
+        <View
+            android:id="@+id/step1Dot"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:background="@drawable/dot_active" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_weight="1"
+            android:background="@color/secondary"
+            android:alpha="0.4" />
+
+        <View
+            android:id="@+id/step2Dot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/dot_inactive" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_weight="1"
+            android:background="@color/secondary"
+            android:alpha="0.4" />
+
+        <View
+            android:id="@+id/step3Dot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/dot_inactive" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_weight="1"
+            android:background="@color/secondary"
+            android:alpha="0.4" />
+
+        <View
+            android:id="@+id/step4Dot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/dot_inactive" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="2dp"
+            android:layout_weight="1"
+            android:background="@color/secondary"
+            android:alpha="0.4" />
+
+        <View
+            android:id="@+id/step5Dot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/dot_inactive" />
+
+    </LinearLayout>
+
+    <!-- ── ViewPager ─────────────────────────────────── -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="16dp"
+        android:paddingHorizontal="20dp"
+        android:clipToPadding="false"
+        android:overScrollMode="never" />
+
+    <!-- ── Navigasi ──────────────────────────────────── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="24dp"
+        android:gravity="center_vertical">
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="←"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/primary"
+            android:visibility="gone" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnNext"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:paddingHorizontal="28dp"
+            android:text="Selanjutnya"
+            android:textSize="14sp"
+            android:textColor="@color/onPrimary"
+            android:fontFamily="sans-serif-medium"
+            android:backgroundTint="@color/primary"
+            android:stateListAnimator="@null" />
+
+    </LinearLayout>
+
+    <!-- ── Loading ───────────────────────────────────── -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:indeterminateTint="@color/primary"
+        android:visibility="gone" />
+
+</LinearLayout>
