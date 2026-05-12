@@ -52,7 +52,9 @@ class CreateAccountActivity : AppCompatActivity() {
         // REGISTER
         signUpButton.setOnClickListener {
             val name = nameInput.text.toString().trim()
-            val email = emailInput.text.toString().trim()
+            val email = emailInput.text.toString()
+                .trim()
+                .lowercase()
             val password = passwordInput.text.toString().trim()
 
             when {

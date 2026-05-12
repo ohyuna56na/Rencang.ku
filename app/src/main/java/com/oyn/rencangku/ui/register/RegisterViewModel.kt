@@ -24,20 +24,56 @@ class RegisterViewModel(
                 val apiKey = ApiClient.API_KEY
                 val auth = "Bearer $apiKey"
 
+
+                val existingUser = apiService.checkEmail(
+                    apiKey = apiKey,
+                    auth = auth,
+                    email = email
+                )
+
+                if (existingUser.isNotEmpty()) {
+                    onError("Email sudah terdaftar")
+                    return@launch
+                }
+
                 val response = apiService.signup(
                     apiKey = apiKey,
                     auth = auth,
                     request = SignupRequest(name, email, password)
                 )
 
-                onSuccess(
-                    AuthResponse(
-                        authToken = response.id.toString(),
-                        user = response
+                val user = response.firstOrNull()
+
+                if (user != null) {
+
+                    onSuccess(
+                        AuthResponse(
+                            authToken = user.id.toString(),
+                            user = user
+                        )
                     )
-                )
+
+                } else {
+
+                    onError("Gagal mengambil data user")
+                }
             } catch (e: Exception) {
-                onError(e.message ?: "Signup gagal")
+
+                e.printStackTrace()
+
+                val errorMessage = when {
+
+                    e.message?.contains("duplicate", true) == true ->
+                        "Email sudah terdaftar"
+
+                    e.message?.contains("End of input", true) == true ->
+                        "Registrasi berhasil"
+
+                    else ->
+                        e.localizedMessage ?: "Signup gagal"
+                }
+
+                onError(errorMessage)
             }
         }
     }

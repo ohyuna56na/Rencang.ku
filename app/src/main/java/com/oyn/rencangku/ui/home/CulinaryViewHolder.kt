@@ -24,18 +24,26 @@ class CulinaryViewHolder(
         binding.tvCategoriSuhu.text =
             item.categorize_weather ?: ""
 
-        val glideUrl = GlideUrl(
-            item.header_image,
-            LazyHeaders.Builder()
-                .addHeader("User-Agent", "Mozilla/5.0")
-                .build()
-        )
+        if (!item.header_image.isNullOrEmpty()) {
 
-        // Image
-        Glide.with(binding.root.context)
-            .load(glideUrl)
-            .placeholder(R.drawable.img)
-            .error(R.drawable.img)
-            .into(binding.imgProfile)
+            val glideUrl = GlideUrl(
+                item.header_image,
+                LazyHeaders.Builder()
+                    .addHeader("User-Agent", "Mozilla/5.0")
+                    .build()
+            )
+
+            Glide.with(binding.root.context)
+                .load(glideUrl)
+                .placeholder(R.drawable.img)
+                .error(R.drawable.img)
+                .into(binding.imgProfile)
+
+        } else {
+
+            Glide.with(binding.root.context)
+                .load(R.drawable.img)
+                .into(binding.imgProfile)
+        }
     }
 }

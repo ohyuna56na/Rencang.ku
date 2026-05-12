@@ -23,26 +23,34 @@ class ProfileViewModel(
 
     fun loadProfile() {
         viewModelScope.launch {
+
             try {
+
                 val userId = sessionManager.getUserId()
+
                 if (userId == -1) {
                     _error.value = "Session habis"
                     return@launch
                 }
 
-                val apiKey = ApiClient.API_KEY
-                val auth = "Bearer $apiKey"
-
                 val result = apiService.getProfile(
-                    apiKey = apiKey,
-                    auth = auth,
-                    id = sessionManager.getUserId().toString()
+                    apiKey = ApiClient.API_KEY,
+                    auth = "Bearer ${ApiClient.API_KEY}",
+                    id = "eq.${sessionManager.getUserId()}"
                 )
 
-                _user.value = result.firstOrNull()
+                if (result.isNotEmpty()) {
+                    _user.value = result[0]
+                } else {
+                    _error.value = "User tidak ditemukan"
+                }
 
             } catch (e: Exception) {
-                _error.value = e.message ?: "Gagal memuat data profil"
+
+                e.printStackTrace()
+
+                _error.value =
+                    e.message ?: "Gagal memuat profile"
             }
         }
     }

@@ -160,13 +160,28 @@ interface ApiService {
     suspend fun signup(
         @Header("apikey") apiKey: String,
         @Header("Authorization") auth: String,
+        @Header("Prefer") prefer: String = "return=representation",
         @Body request: SignupRequest
-    ): User
+    ): List<User>
 
     @GET("users")
     suspend fun getProfile(
         @Header("apikey") apiKey: String,
         @Header("Authorization") auth: String,
-        @Query("id") id: String
+        @Query("id") id: String,
+        @Query("select") select: String = "*"
+    ): List<User>
+
+    @GET("users")
+    suspend fun checkEmail(
+
+        @Header("apikey") apiKey: String,
+
+        @Header("Authorization") auth: String,
+
+        @Query("email") email: String,
+
+        @Query("select") select: String = "*"
+
     ): List<User>
 }

@@ -14,14 +14,18 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.oyn.rencangku.R
 import com.oyn.rencangku.auth.SessionManager
+import com.oyn.rencangku.data.CulinaryPlace
 import com.oyn.rencangku.databinding.FragmentHomeBinding
+import com.oyn.rencangku.ml.MLApiClient
 import com.oyn.rencangku.network.ApiClient
 import com.oyn.rencangku.ui.detailResto.DetailRestoActivity
+import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Locale
 
@@ -34,18 +38,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var adapter: CulinaryAdapter
+    private lateinit var sessionManager: SessionManager
 
     companion object {
         private const val TAG = "HomeFragment"
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         _binding = FragmentHomeBinding.bind(view)
 
-        val sessionManager = SessionManager(requireContext())
+        sessionManager = SessionManager(requireContext())
         val factory = HomeViewModelFactory(
             ApiClient.RestaurantApi,
             sessionManager
@@ -136,6 +142,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         observeData()
         requestLocationPermission()
         viewModel.loadCulinaryPlaces()
+        loadRecommendations()
     }
 
 
@@ -205,6 +212,92 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 location.latitude,
                 location.longitude
             )
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getUserLocation(onResult: (Double, Double) -> Unit) {
+
+        fusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
+
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location ->
+
+                if (location != null) {
+
+                    onResult(
+                        location.latitude,
+                        location.longitude
+                    )
+
+                } else {
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Lokasi tidak ditemukan",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+    }
+
+    private fun loadRecommendations() {
+
+        val userId = sessionManager.getUserId()
+
+        getUserLocation { lat, lon ->
+
+            lifecycleScope.launch {
+
+                try {
+
+                    val response =
+                        MLApiClient.api.getRecommendations(
+                            userId = userId,
+                            lat = lat,
+                            lon = lon,
+                            weather = "semua"
+                        )
+
+                    val recommendations = response.recommendations.map {
+
+                        CulinaryPlace(
+                            id = it.id,
+                            title = it.title,
+                            category = it.category,
+                            rating = it.rating,
+                            page_url = it.page_url,
+                            header_image = it.header_image,
+                            rating_count = it.rating_count,
+                            price_range = it.price_range,
+                            address = it.address,
+                            latitude = it.latitude,
+                            longitude = it.longitude,
+                            phone = it.phone,
+                            open_hours = it.open_hours,
+                            categorize_weather = it.categorize_weather
+                        )
+                    }
+
+                    adapter.submitList(recommendations)
+
+                    Log.d(
+                        "ML_RESPONSE",
+                        recommendations.toString()
+                    )
+
+                } catch (e: Exception) {
+
+                    e.printStackTrace()
+
+                    Toast.makeText(
+                        requireContext(),
+                        "Gagal load rekomendasi",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         }
     }
 
