@@ -21,6 +21,7 @@ class AllRestaurantActivity : AppCompatActivity() {
     private lateinit var adapter: CulinaryAdapter
     private lateinit var viewModel: HomeViewModel
     private lateinit var sessionManager: SessionManager
+    private var category: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,7 +53,15 @@ class AllRestaurantActivity : AppCompatActivity() {
         setupRecyclerView()
         observeViewModel()
 
-        viewModel.loadCulinaryPlaces()
+        category = intent.getStringExtra("CATEGORY")
+
+        binding.detailTitle.text = category ?: "Semua Restoran"
+
+        if (category.isNullOrEmpty()) {
+            viewModel.loadCulinaryPlaces()
+        } else {
+            viewModel.loadCategory(category!!)
+        }
     }
 
     private fun setupToolbar() {

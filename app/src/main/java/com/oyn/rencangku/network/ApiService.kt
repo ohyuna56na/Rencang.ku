@@ -215,4 +215,17 @@ interface ApiService {
         @Query("select") select: String = "*"
 
     ): List<User>
+
+    /* =========================
+        Category
+       ========================= */
+    @GET("culinary_places")
+    suspend fun getCulinaryPlacesByCategory(
+        @Header("apikey") apiKey: String,
+        @Header("Authorization") auth: String,
+        @Query("Category") category: String,
+        @Query("select") select: String = "*"
+    ): List<CulinaryPlace>
+
+
 }

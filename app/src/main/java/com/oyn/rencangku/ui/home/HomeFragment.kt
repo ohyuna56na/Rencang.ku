@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.oyn.rencangku.R
@@ -26,6 +27,7 @@ import com.oyn.rencangku.ml.MLApiClient
 import com.oyn.rencangku.ml.RecommendRequest
 import com.oyn.rencangku.network.ApiClient
 import com.oyn.rencangku.ui.detailResto.DetailRestoActivity
+import com.oyn.rencangku.ui.home.category.CategoryAdapter
 import com.oyn.rencangku.ui.preference.PreferenceActivity
 import com.oyn.rencangku.ui.preference.PreferenceRepository
 import com.oyn.rencangku.ui.preference.Result
@@ -46,6 +48,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     // Repository preference — hanya untuk cek sekali di Home
     private val preferenceRepository by lazy { PreferenceRepository() }
 
+    // Adapter category
+    private lateinit var categoryAdapter: CategoryAdapter
+
     companion object {
         private const val TAG = "HomeFragment"
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -62,7 +67,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         applySafeArea()
         setupRecyclerView()
+        setupCategoryRecycler()
         observeViewModel()
+
+        viewModel.loadCulinaryPlaces()
         loadData()
 
         binding.TvAllResto.setOnClickListener {
@@ -185,6 +193,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
 
         viewModel.getUsername()
+
+        viewModel.categories.observe(viewLifecycleOwner) { list ->
+            categoryAdapter.submitList(list)
+        }
     }
 
     private fun loadData() {
@@ -232,6 +244,30 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 Toast.makeText(requireContext(), "Lokasi tidak ditemukan", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun setupCategoryRecycler() {
+
+        categoryAdapter = CategoryAdapter { category ->
+
+            val intent = Intent(
+                requireContext(),
+                AllRestaurantActivity::class.java
+            )
+
+            intent.putExtra("CATEGORY", category)
+
+            startActivity(intent)
+        }
+
+        binding.rvCategory.layoutManager =
+            LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+
+        binding.rvCategory.adapter = categoryAdapter
     }
 
     private fun loadRecommendations() {

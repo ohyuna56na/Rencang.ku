@@ -38,6 +38,11 @@ class HomeViewModel(
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
+    private var allRestaurant = listOf<CulinaryPlace>()
+
+    private val _categories = MutableLiveData<List<String>>()
+    val categories: LiveData<List<String>> = _categories
+
     fun getUsername() {
         viewModelScope.launch {
             try {
@@ -67,11 +72,47 @@ class HomeViewModel(
 
     fun loadCulinaryPlaces() {
         viewModelScope.launch {
+
+            _isLoading.value = true
+
+            try {
+
+                allRestaurant = repository.getCulinaryPlaces()
+
+                _culinaryPlaces.value = allRestaurant
+
+                _categories.value =
+                    allRestaurant
+                        .filter { it.displayCategory.isNotBlank() }
+                        .groupBy { it.displayCategory }
+                        .toList()
+                        .sortedByDescending { (_, restaurants) ->
+                            restaurants.size
+                        }
+                        .map { (category, _) ->
+                            category
+                        }
+
+            } catch (e: Exception) {
+
+                _culinaryPlaces.value = emptyList()
+
+            } finally {
+
+                _isLoading.value = false
+
+            }
+        }
+    }
+
+    fun loadCategory(category: String) {
+        viewModelScope.launch {
             _isLoading.value = true
             try {
-                _culinaryPlaces.value = repository.getCulinaryPlaces()
+                _culinaryPlaces.value = repository.getCategory(category)
             } catch (e: Exception) {
                 _culinaryPlaces.value = emptyList()
+                _error.value = e.message
             } finally {
                 _isLoading.value = false
             }

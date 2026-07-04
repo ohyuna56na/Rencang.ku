@@ -120,54 +120,13 @@
                 android:textColor="@color/black"
                 tools:ignore="TextSizeCheck" />
 
-            <RelativeLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCategory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
-
-                <ImageView
-                    android:id="@+id/foodImage"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_marginStart="30dp"
-                    android:src="@drawable/ic_food"
-                    android:contentDescription="@string/text_food"/>
-
-                <TextView
-                    android:id="@+id/Tv_food"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/foodImage"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginStart="28dp"
-                    android:text="@string/text_food"
-                    android:textSize="15sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppins_medium" />
-
-                <ImageView
-                    android:id="@+id/drinkImage"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/ic_drink"
-                    android:layout_marginStart="52dp"
-                    android:layout_toEndOf="@id/foodImage"
-                    android:layout_marginTop="8dp"
-                    android:contentDescription="@string/text_drink"/>
-
-                <TextView
-                    android:id="@+id/Tv_drink"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/drinkImage"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginStart="35dp"
-                    android:text="@string/text_drink"
-                    android:layout_toEndOf="@id/Tv_food"
-                    android:textSize="15sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppins_medium" />
-            </RelativeLayout>
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:clipToPadding="false"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
