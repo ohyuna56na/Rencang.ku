@@ -197,16 +197,20 @@ interface ApiService {
 
     @GET("users")
     suspend fun checkEmail(
-
         @Header("apikey") apiKey: String,
-
         @Header("Authorization") auth: String,
-
         @Query("email") email: String,
-
         @Query("select") select: String = "*"
-
     ): List<User>
+
+    @PATCH("users")
+    suspend fun updateProfile(
+        @Header("apikey") apiKey: String = ApiClient.API_KEY,
+        @Header("Authorization") auth: String = "Bearer ${ApiClient.API_KEY}",
+        @Header("Prefer") prefer: String = "return=representation",
+        @Query("id") id: String, // format: "eq.USER_ID"
+        @Body request: Map<String, String> // Menggunakan Map agar dinamis jika password tidak diisi
+    ): Response<List<User>>
 
     /* =========================
         Category
