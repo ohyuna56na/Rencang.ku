@@ -1,50 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white"
+    android:orientation="vertical"
     tools:context=".ui.detailResto.DetailRestoActivity">
+
+    <!-- Back Arrow and Title -->
+    <LinearLayout
+        android:id="@+id/backButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/backButtonDetail"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:contentDescription="@string/back"
+            android:src="@drawable/ic_back" />
+
+        <TextView
+            android:id="@+id/detailTitle"
+            android:layout_width="288dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:gravity="center"
+            android:text="@string/name_detail"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+    </LinearLayout>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white"
-        android:fillViewport="true">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="16dp">
-
-            <!-- Back Arrow and Title -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="20dp">
-
-                <ImageView
-                    android:id="@+id/backButtonDetail"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_back"
-                    android:contentDescription="@string/back" />
-
-                <TextView
-                    android:id="@+id/detailTitle"
-                    android:layout_width="288dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:gravity="center"
-                    android:text="@string/name_detail"
-                    android:textColor="@color/black"
-                    android:textSize="15sp"
-                    android:fontFamily="@font/poppins_semi_bold" />
-            </LinearLayout>
 
             <!-- Gambar Profil -->
             <RelativeLayout
@@ -71,9 +75,9 @@
                     android:id="@+id/imgFavorite"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:layout_margin="15dp"
-                    android:layout_alignParentEnd="true"
                     android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="15dp"
                     android:src="@drawable/favorite_line" />
 
                 <!-- Rating -->
@@ -120,8 +124,8 @@
                 android:id="@+id/tvRestaurantDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="26dp"
                 android:layout_marginStart="18dp"
+                android:layout_marginTop="26dp"
                 android:layout_marginEnd="15dp"
                 android:fontFamily="@font/poppins_semi_bold"
                 android:text="@string/nama_restoran"
@@ -133,8 +137,8 @@
                 android:id="@+id/detail_address"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginStart="18dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 tools:ignore="UseCompoundDrawables">
 
@@ -164,8 +168,8 @@
                 android:id="@+id/detail_jam"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
                 android:layout_marginStart="18dp"
+                android:layout_marginTop="24dp"
                 android:orientation="vertical">
 
                 <LinearLayout
@@ -176,21 +180,20 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@drawable/ic_clock"/>
+                        android:src="@drawable/ic_clock" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Jam Operasional"
                         android:layout_marginStart="8dp"
-                        android:fontFamily="@font/poppins_semi_bold"/>
+                        android:fontFamily="@font/poppins_semi_bold"
+                        android:text="Jam Operasional" />
                 </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvOperationalHours"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
             <!-- telepon Restoran -->
@@ -198,8 +201,8 @@
                 android:id="@+id/detail_telepon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginStart="18dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 tools:ignore="UseCompoundDrawables">
 
@@ -214,11 +217,11 @@
                     android:id="@+id/tvPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/phone_number"
                     android:layout_marginStart="8dp"
-                    android:textSize="14sp"
                     android:fontFamily="@font/poppins_regular"
-                    android:textColor="@color/black" />
+                    android:text="@string/phone_number"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <!-- harga Restoran -->
@@ -226,8 +229,8 @@
                 android:id="@+id/detail_harga"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginStart="18dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal"
                 tools:ignore="UseCompoundDrawables">
 
@@ -242,14 +245,15 @@
                     android:id="@+id/tvPriceRange"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Rp.MinPrice - Rp.MaxPrice"
                     android:layout_marginStart="8dp"
-                    android:textSize="14sp"
                     android:fontFamily="@font/poppins_regular"
-                    android:textColor="@color/black" />
+                    android:text="Rp.MinPrice - Rp.MaxPrice"
+                    android:textColor="@color/black"
+                    android:textSize="14sp" />
             </LinearLayout>
 
             <!-- Kategori Restoran -->
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -274,25 +278,68 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="18dp"
                 android:layout_marginTop="18dp"
-                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_semi_bold"
                 android:text="@string/title_kulian"
-                android:textSize="16sp"
-                android:fontFamily="@font/poppins_semi_bold" />
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <ProgressBar
+                android:id="@+id/progressRelated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/item_kulinerDetail"
+                android:id="@+id/item_kategori"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 tools:listitem="@layout/item_kuliner" />
+
+            <TextView
+                android:id="@+id/tvEmptyRelated"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="Belum ada kuliner dengan kategori yang sama."
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnAddReview"
+                android:layout_width="match_parent"
+                android:layout_height="57dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:backgroundTint="@color/primary"
+                android:fontFamily="@font/poppins_semi_bold"
+                android:text="Tambah Review"
+                android:textColor="@android:color/white"
+                app:cornerRadius="20dp" />
+
+            <ProgressBar
+                android:id="@+id/progressReview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="12dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/item_feedbackDetail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                tools:listitem="@layout/item_feedback"/>
+                tools:listitem="@layout/item_feedback" />
 
+            <TextView
+                android:id="@+id/tvEmptyReview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="Belum ada review."
+                android:visibility="gone" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -300,7 +347,7 @@
         android:id="@+id/ButtonCek_lokasi"
         android:layout_width="325dp"
         android:layout_height="57dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="10dp"
         app:cornerRadius="20dp"
         android:layout_gravity="center_horizontal|bottom"
         android:text="@string/cek_lokasi"
@@ -309,4 +356,4 @@
         android:backgroundTint="@color/primary"
         android:textColor="@android:color/white"
         android:elevation="4dp" />
-</FrameLayout>
+</LinearLayout>

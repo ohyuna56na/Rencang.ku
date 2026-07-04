@@ -119,6 +119,26 @@ class HomeViewModel(
         }
     }
 
+    private val _relatedRestaurant =
+        MutableLiveData<List<CulinaryPlace>>()
+
+    val relatedRestaurant: LiveData<List<CulinaryPlace>>
+            = _relatedRestaurant
+
+    fun loadRelatedRestaurant(
+        category: String,
+        currentId: Int
+    ){
+        viewModelScope.launch {
+
+            _relatedRestaurant.value =
+                repository.getRelatedRestaurant(
+                    category,
+                    currentId
+                )
+        }
+    }
+
     fun setLocation(city: String) {
         _locationName.value = city
     }

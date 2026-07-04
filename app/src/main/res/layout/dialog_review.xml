@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rating"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <RatingBar
+            android:id="@+id/ratingBarReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:progressTint="@color/primary"
+            android:secondaryProgressTint="@color/primary"
+            android:numStars="5"
+            android:stepSize="1"
+            android:rating="5"
+            android:layout_marginTop="8dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Review"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:textSize="16sp"
+            android:layout_marginTop="20dp"/>
+
+        <EditText
+            android:id="@+id/etReview"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:gravity="top"
+            android:fontFamily="@font/poppins_regular"
+            android:hint="Bagikan pengalaman Anda..."
+            android:textSize="13dp"
+            android:inputType="textMultiLine"
+            android:maxLines="5"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Foto (Opsional)"
+            android:textStyle="bold"
+            android:fontFamily="@font/poppins_semi_bold"
+            android:textSize="16sp"
+            android:layout_marginTop="20dp"/>
+
+        <ImageView
+            android:id="@+id/imgPreview"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="10dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/rounded_image"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChoosePhoto"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="50dp"
+            android:text="Pilih Foto"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/poppins_semi_bold"
+            app:backgroundTint="@color/primary"
+            app:cornerRadius="20dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

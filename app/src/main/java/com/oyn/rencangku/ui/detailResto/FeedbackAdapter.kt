@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.oyn.rencangku.R
 import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.data.Review
@@ -14,7 +15,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class FeedbackAdapter(
-    private val reviews: List<Review>,
+    private val reviews: MutableList<Review>,
     private val sessionManager: SessionManager,
     private val onEditClick: (Review) -> Unit,
     private val onDeleteClick: (Review) -> Unit
@@ -30,6 +31,7 @@ class FeedbackAdapter(
         val ratingBar: RatingBar = itemView.findViewById(R.id.ratingBar)
         val btnEdit: ImageView = itemView.findViewById(R.id.btnEdit)
         val btnDelete: ImageView = itemView.findViewById(R.id.btnDelete)
+        val reviewImg = itemView.findViewById<ImageView>(R.id.reviewImg)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FeedbackViewHolder {
@@ -42,13 +44,26 @@ class FeedbackAdapter(
 
         val review = reviews[position]
         val currentUserId = sessionManager.getUserId()
-
-        holder.userImage.setImageResource(R.drawable.profile)
-        holder.userName.text = "User ${review.users_id}"
+        holder.userName.text = review.users?.name ?: "User"
+        Glide.with(holder.itemView.context)
+            .load(review.users?.avatar)
+            .placeholder(R.drawable.profile)
+            .into(holder.userImage)
         holder.feedbackDescription.text = review.review_text ?: "-"
         holder.ratingBar.rating = review.rating.toFloat()
 
         holder.feedbackTime.text = formatDate(review.created_at)
+
+        if (review.photos.isNullOrEmpty()) {
+            holder.reviewImg.visibility = View.GONE
+        } else {
+            holder.reviewImg.visibility = View.VISIBLE
+
+            Glide.with(holder.itemView.context)
+                .load(review.photos)
+                .placeholder(R.drawable.ic_drink)
+                .into(holder.reviewImg)
+        }
 
         // 🔥 Tampilkan edit & delete hanya jika pemilik review
         if (review.users_id == currentUserId) {
@@ -66,6 +81,12 @@ class FeedbackAdapter(
         holder.btnDelete.setOnClickListener {
             onDeleteClick(review)
         }
+    }
+
+    fun updateData(newData: List<Review>) {
+        reviews.clear()
+        reviews.addAll(newData)
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int = reviews.size

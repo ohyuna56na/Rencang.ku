@@ -29,4 +29,18 @@ class HomeRepository(
             category = "eq.$category"
         )
     }
+
+    suspend fun getRelatedRestaurant(
+        category: String,
+        currentId: Int
+    ): List<CulinaryPlace> {
+
+        return ApiClient.RestaurantApi
+            .getCulinaryPlacesByCategory(
+                apiKey = apiKey,
+                auth = auth,
+                category = "eq.$category"
+            )
+            .filter { it.id != currentId }
+    }
 }

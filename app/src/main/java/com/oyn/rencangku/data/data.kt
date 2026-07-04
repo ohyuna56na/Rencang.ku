@@ -212,14 +212,16 @@ data class Review(
     val culinary_places_id: Int,
     val rating: Int,
     val review_text: String?,
-    val photos: String?
+    val photos: String?,
+    val users: User?
 )
 
 data class ReviewRequest(
     val users_id: Int,
     val culinary_places_id: Int,
     val rating: Int,
-    val review_text: String?
+    val review_text: String?,
+    val photos: String?
 )
 
 data class UserInteraction(

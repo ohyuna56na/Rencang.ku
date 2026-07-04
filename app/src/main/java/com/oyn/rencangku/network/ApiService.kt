@@ -114,42 +114,34 @@ interface ApiService {
     suspend fun getReviews(
         @Header("apikey") apiKey: String,
         @Header("Authorization") auth: String,
-        @Query("users_id") userId: String
+        @Query("culinary_places_id") restaurantId: String,
+        @Query("select") select: String =
+            "*,users(id,name,avatar)"
     ): List<Review>
-
-    @GET("reviews/{id}")
-    suspend fun getReviewDetail(
-        @Header("apikey") apiKey: String,
-        @Header("Authorization") auth: String,
-        @Query("users_id") userId: String,
-        @Path("id") id: Int
-    ): Review
 
     @POST("reviews")
     suspend fun addReview(
         @Header("apikey") apiKey: String,
         @Header("Authorization") auth: String,
-        @Query("users_id") userId: String,
+        @Header("Prefer") prefer: String = "return=representation",
         @Body request: ReviewRequest
-    ): Review
+    ): Response<List<Review>>
 
-    @PATCH("reviews/{id}")
+    @PATCH("reviews")
     suspend fun updateReview(
         @Header("apikey") apiKey: String,
         @Header("Authorization") auth: String,
-        @Query("users_id") userId: String,
-        @Path("id") id: Int,
+        @Query("id") id: String,
+        @Header("Prefer") prefer: String = "return=representation",
         @Body request: ReviewRequest
-    ): Review
+    ): Response<List<Review>>
 
-    @DELETE("reviews/{id}")
+    @HTTP(method = "DELETE", path = "reviews", hasBody = false)
     suspend fun deleteReview(
         @Header("apikey") apiKey: String,
         @Header("Authorization") auth: String,
         @Query("users_id") userId: String,
-        @Path("id") id: Int
     )
-
 
     /* =========================
        USER INTERACTIONS

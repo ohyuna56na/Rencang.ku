@@ -135,7 +135,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/profile_selector"
+                    android:src="@drawable/ic_edit"
                     tools:ignore="ContentDescription" />
 
                 <TextView
