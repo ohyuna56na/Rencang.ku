@@ -90,8 +90,9 @@
             android:orientation="vertical"
             android:paddingHorizontal="20dp">
 
-            <!-- MENU ITEM -->
+            <!-- EDIT PROFILE -->
             <LinearLayout
+                android:id="@+id/menuEditProfile"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
                 android:paddingVertical="12dp"
@@ -107,6 +108,38 @@
 
                 <TextView
                     android:text="Edit Informasi"
+                    android:textSize="14sp"
+                    android:textColor="@color/black"
+                    android:layout_marginStart="12dp"
+                    android:fontFamily="@font/poppins_semi_bold"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/arrow_right"/>
+            </LinearLayout>
+
+            <!-- EDIT PREFERENCES -->
+            <LinearLayout
+                android:id="@+id/menuEditPreference"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingVertical="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:ignore="UselessParent">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/profile_selector"
+                    tools:ignore="ContentDescription" />
+
+                <TextView
+                    android:text="Edit Preference"
                     android:textSize="14sp"
                     android:textColor="@color/black"
                     android:layout_marginStart="12dp"

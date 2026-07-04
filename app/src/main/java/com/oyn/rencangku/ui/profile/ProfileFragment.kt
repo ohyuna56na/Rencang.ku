@@ -12,6 +12,8 @@ import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.databinding.FragmentProfileBinding
 import com.oyn.rencangku.network.ApiClient
 import com.oyn.rencangku.ui.onboarding.ActivityOnboardingLast
+import com.oyn.rencangku.ui.preference.PreferenceActivity
+import com.oyn.rencangku.ui.profile.EditProfileActivity
 
 class ProfileFragment : Fragment() {
 
@@ -40,6 +42,7 @@ class ProfileFragment : Fragment() {
 
         observeData()
         setupLogout()
+        setupMenu()
 
         viewModel.loadProfile()
 
@@ -56,6 +59,23 @@ class ProfileFragment : Fragment() {
 
         viewModel.error.observe(viewLifecycleOwner) { message ->
             Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupMenu() {
+
+        binding.menuEditProfile.setOnClickListener {
+
+            startActivity(
+                Intent(requireContext(), EditProfileActivity::class.java)
+            )
+        }
+
+        binding.menuEditPreference.setOnClickListener {
+
+            startActivity(
+                Intent(requireContext(), PreferenceActivity::class.java)
+            )
         }
     }
 
