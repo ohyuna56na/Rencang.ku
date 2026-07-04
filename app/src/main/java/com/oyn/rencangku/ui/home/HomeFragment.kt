@@ -65,6 +65,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         observeViewModel()
         loadData()
 
+        binding.TvAllResto.setOnClickListener {
+            startActivity(
+                Intent(requireContext(), AllRestaurantActivity::class.java)
+            )
+        }
+
         // Cek preference saat HomeFragment pertama kali dibuka
         checkUserPreference()
     }
@@ -155,15 +161,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             binding.TvLocation.text = city
         }
 
-        viewModel.culinaryPlaces.observe(viewLifecycleOwner) { list ->
-            if (list.isNotEmpty() && adapter.itemCount == 0) {
-                adapter.submitList(list)
-            }
-            val loading = viewModel.isLoading.value ?: false
-            binding.tvNoResults.visibility =
-                if (!loading && list.isEmpty()) View.VISIBLE else View.GONE
-        }
-
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
             if (isLoading) binding.tvNoResults.visibility = View.GONE
@@ -192,8 +189,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun loadData() {
         requestLocationPermission()
-        viewModel.loadCulinaryPlaces()
-        loadRecommendations()
     }
 
     private fun requestLocationPermission() {
@@ -221,12 +216,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 ?.firstOrNull()?.locality ?: "Lokasi Tidak Diketahui"
             viewModel.setLocation(city)
             viewModel.fetchWeather(location.latitude, location.longitude)
+
+            loadRecommendations()
         }
     }
 
     @SuppressLint("MissingPermission")
     private fun getUserLocation(onResult: (Double, Double) -> Unit) {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        fusedLocationClient =
+            LocationServices.getFusedLocationProviderClient(requireContext())
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 onResult(location.latitude, location.longitude)
@@ -238,25 +236,46 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun loadRecommendations() {
         val userId = sessionManager.getUserId()
+
+        binding.progressBar.visibility = View.VISIBLE
+        binding.tvNoResults.visibility = View.GONE
+
         getUserLocation { lat, lon ->
             lifecycleScope.launch {
                 try {
                     val response = MLApiClient.api.getRecommendations(
                         RecommendRequest(
-                            userId      = userId,
-                            latitude    = lat,
-                            longitude   = lon,
-                            topN        = 10,
+                            userId = userId,
+                            latitude = lat,
+                            longitude = lon,
+                            topN = 10,
                             autoWeather = true
                         )
                     )
+
+                    binding.progressBar.visibility = View.GONE
+
                     if (response.recommendations.isNotEmpty()) {
                         adapter.submitList(response.recommendations)
-                        Log.d(TAG, "ML loaded: ${response.recommendations.size} items, mode=${response.mode}")
+                    } else {
+                        binding.tvNoResults.visibility = View.VISIBLE
                     }
+
+                    Log.d(
+                        TAG,
+                        "ML loaded: ${response.recommendations.size}, mode=${response.mode}"
+                    )
+
                 } catch (e: Exception) {
-                    Log.e(TAG, "loadRecommendations error: ${e.message}")
-                    Toast.makeText(requireContext(), "Gagal load rekomendasi", Toast.LENGTH_SHORT).show()
+                    binding.progressBar.visibility = View.GONE
+                    binding.tvNoResults.visibility = View.VISIBLE
+
+                    Log.e(TAG, "loadRecommendations", e)
+                    Toast.makeText(
+                        requireContext(),
+                        "Gagal load rekomendasi",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
