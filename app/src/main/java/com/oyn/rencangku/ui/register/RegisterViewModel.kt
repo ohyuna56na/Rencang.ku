@@ -1,5 +1,7 @@
 package com.oyn.rencangku.ui.register
 
+import retrofit2.HttpException
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oyn.rencangku.data.AuthResponse
@@ -28,7 +30,7 @@ class RegisterViewModel(
                 val existingUser = apiService.checkEmail(
                     apiKey = apiKey,
                     auth = auth,
-                    email = email
+                    email = "eq.$email"
                 )
 
                 if (existingUser.isNotEmpty()) {
@@ -57,9 +59,16 @@ class RegisterViewModel(
 
                     onError("Gagal mengambil data user")
                 }
-            } catch (e: Exception) {
+            } catch (e: HttpException) {
 
-                e.printStackTrace()
+                Log.e("SIGNUP", "HTTP Code = ${e.code()}")
+                Log.e("SIGNUP", e.response()?.errorBody()?.string().orEmpty())
+
+                onError("Signup gagal")
+            }
+            catch (e: Exception) {
+
+                Log.e("SIGNUP", Log.getStackTraceString(e))
 
                 val errorMessage = when {
 
