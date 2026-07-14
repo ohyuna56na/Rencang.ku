@@ -192,20 +192,40 @@ class DetailRestoActivity : AppCompatActivity() {
             else "0"
 
         setupOperationalHours(restaurant.openHours)
+        Log.d("OPEN_HOURS", restaurant.openHours.toString())
     }
 
     private fun setupOperationalHours(openHours: Map<String, List<String>>?) {
-        if (openHours == null) return
 
-        val orderedDays = listOf("Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu")
-        val list = orderedDays.map { day ->
-            val time = openHours[day]?.firstOrNull() ?: "Tutup"
-            day to time
+        if (openHours.isNullOrEmpty()) return
+
+        val raw = openHours.keys.first()
+
+        val englishToIndo = mapOf(
+            "Monday" to "Senin",
+            "Tuesday" to "Selasa",
+            "Wednesday" to "Rabu",
+            "Thursday" to "Kamis",
+            "Friday" to "Jumat",
+            "Saturday" to "Sabtu",
+            "Sunday" to "Minggu"
+        )
+
+        val result = mutableListOf<Pair<String, String>>()
+
+        englishToIndo.forEach { (eng, indo) ->
+
+            val regex = Regex("$eng': \\['(.*?)']")
+            val match = regex.find(raw)
+
+            result.add(
+                indo to (match?.groupValues?.get(1) ?: "Tutup")
+            )
         }
 
         binding.rvOperationalHours.apply {
             layoutManager = LinearLayoutManager(this@DetailRestoActivity)
-            adapter = OperationalHoursAdapter(list)
+            adapter = OperationalHoursAdapter(result)
         }
     }
 
