@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.oyn.rencangku.R
+import androidx.appcompat.widget.SearchView
 import com.oyn.rencangku.auth.SessionManager
 import com.oyn.rencangku.databinding.FragmentHomeBinding
 import com.oyn.rencangku.ml.MLApiClient
@@ -31,6 +32,7 @@ import com.oyn.rencangku.ui.home.category.CategoryAdapter
 import com.oyn.rencangku.ui.preference.PreferenceActivity
 import com.oyn.rencangku.ui.preference.PreferenceRepository
 import com.oyn.rencangku.ui.preference.Result
+import com.oyn.rencangku.ui.search.SearchActivity
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Locale
@@ -72,6 +74,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         viewModel.loadCulinaryPlaces()
         loadData()
+
+        binding.ivSearch.setOnClickListener {
+
+            startActivity(
+                Intent(requireContext(), SearchActivity::class.java)
+            )
+
+        }
 
         binding.TvAllResto.setOnClickListener {
             startActivity(
@@ -155,6 +165,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
         binding.itemRestoran.apply {
             layoutManager = GridLayoutManager(requireContext(), 2)
+            isNestedScrollingEnabled = false
             adapter = this@HomeFragment.adapter
         }
     }
@@ -167,11 +178,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
         viewModel.locationName.observe(viewLifecycleOwner) { city ->
             binding.TvLocation.text = city
-        }
-
-        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            if (isLoading) binding.tvNoResults.visibility = View.GONE
         }
 
         viewModel.user.observe(viewLifecycleOwner) { user ->
@@ -274,6 +280,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         val userId = sessionManager.getUserId()
 
         binding.progressBar.visibility = View.VISIBLE
+        binding.itemRestoran.visibility = View.INVISIBLE
         binding.tvNoResults.visibility = View.GONE
 
         getUserLocation { lat, lon ->
@@ -290,6 +297,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     )
 
                     binding.progressBar.visibility = View.GONE
+                    binding.itemRestoran.visibility = View.VISIBLE
+
+                    adapter.submitList(response.recommendations)
 
                     if (response.recommendations.isNotEmpty()) {
                         adapter.submitList(response.recommendations)
@@ -304,6 +314,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
                 } catch (e: Exception) {
                     binding.progressBar.visibility = View.GONE
+                    binding.itemRestoran.visibility = View.GONE
                     binding.tvNoResults.visibility = View.VISIBLE
 
                     Log.e(TAG, "loadRecommendations", e)
